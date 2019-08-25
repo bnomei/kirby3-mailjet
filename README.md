@@ -34,4 +34,4 @@ It is discouraged to use this plugin in any project that promotes racism, sexism
 ## Credits
 
 based on V2 versions of
-- https://github.com/moritzz/Kirby-Calendar
+- https://github.com/bnomei/kirby-mailjet
