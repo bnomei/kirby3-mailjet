@@ -1,7 +1,14 @@
 # Kirby 3 Mailjet
 
-![GitHub release](https://img.shields.io/github/release/bnomei/kirby3-mailjet.svg?maxAge=900) ![License](https://img.shields.io/github/license/mashape/apistatus.svg) ![Kirby Version](https://img.shields.io/badge/Kirby-3-black.svg) ![Kirby 3 Pluginkit](https://img.shields.io/badge/Pluginkit-YES-cca000.svg)  [![Build Status](https://travis-ci.com/bnomei/kirby3-mailjet.svg?branch=master)](https://travis-ci.com/bnomei/kirby3-mailjet) [![Coverage Status](https://coveralls.io/repos/github/bnomei/kirby3-mailjet/badge.svg?branch=master)](https://coveralls.io/github/bnomei/kirby3-mailjet?branch=master) [![Gitter](https://badges.gitter.im/bnomei-kirby-3-plugins/community.svg)](https://gitter.im/bnomei-kirby-3-plugins/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-
+![Release](https://flat.badgen.net/packagist/v/bnomei/kirby3-mailjet?color=ae81ff)
+![Stars](https://flat.badgen.net/packagist/ghs/bnomei/kirby3-mailjet?color=272822)
+![Downloads](https://flat.badgen.net/packagist/dt/bnomei/kirby3-mailjet?color=272822)
+![Issues](https://flat.badgen.net/packagist/ghi/bnomei/kirby3-mailjet?color=e6db74)
+[![Build Status](https://flat.badgen.net/travis/bnomei/kirby3-mailjet)](https://travis-ci.com/bnomei/kirby3-mailjet)
+[![Coverage Status](https://flat.badgen.net/coveralls/c/github/bnomei/kirby3-mailjet)](https://coveralls.io/github/bnomei/kirby3-mailjet) 
+[![Demo](https://flat.badgen.net/badge/website/examples?color=f92672)](https://kirby3-plugins.bnomei.com/mailjet) 
+[![Gitter](https://flat.badgen.net/badge/gitter/chat?color=982ab3)](https://gitter.im/bnomei-kirby-3-plugins/community) 
+[![Twitter](https://flat.badgen.net/badge/twitter/bnomei?color=66d9ef)](https://twitter.com/bnomei)
 @@@TODO@@@
 
 ## Commercial Usage
