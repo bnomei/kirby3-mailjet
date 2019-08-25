@@ -21,6 +21,11 @@ This plugin is free but if you use it in a commercial project please consider to
 
 @@@TODO@@@
 
+
+## Dependencies
+
+- [Mailjet API v3 PHP](https://github.com/mailjet/mailjet-apiv3-php)
+
 ## Disclaimer
 
 This plugin is provided "as is" with no guarantee. Use it at your own risk and always test it yourself before using it in a production environment. If you find any issues, please [create a new issue](https://github.com/bnomei/kirby3-mailjet/issues/new).
