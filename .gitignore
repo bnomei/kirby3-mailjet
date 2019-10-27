@@ -30,3 +30,4 @@
 /vendor/**/php4/*
 /vendor/getkirby/composer-installer
 coverage.xml
+/vendor/**/Dockerfile

@@ -22,8 +22,11 @@
     "newsletter",
     "campaign",
     "transactional",
+    "segment",
     "smtp",
-    "mjml"
+    "mjml",
+    "html",
+    "responsive"
   ],
   "autoload": {
     "psr-4": {
@@ -56,11 +59,18 @@
     "dist": [
       "composer install --no-dev --optimize-autoloader",
       "git rm -rf --cached .; git add .;"
+    ],
+    "kirby": [
+      "composer install",
+      "composer update",
+      "composer install --working-dir=tests/kirby --no-dev --optimize-autoloader",
+      "composer update --working-dir=tests/kirby"
     ]
   },
   "extra": {
     "kirby-cms-path": "tests/kirby"
   },
   "suggest": {
+    "bnomei/kirby3-dotenv": "To load the api secret from an .env file"
   }
 }
