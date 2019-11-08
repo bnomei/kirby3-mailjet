@@ -97,9 +97,9 @@ Sending campaigns consists of creating and/or updating a campaign object using t
 
 - [ ] Explanation on how to use [Janitor Plugin](https://github.com/bnomei/kirby3-janitor) buttons to test and send E-Mails
 - [ ] Getter for verified Sender-E-Mail-Adresses (to use in Panel Dropdowns)
-- [ ] Getter for Contact-Lists (to use in Panel Dropdowns)
+- [ ] Getter for Contactslists (to use in Panel Dropdowns)
 - [ ] Getter for Segments (to use in Panel Dropdowns)
-- [ ] Add/Add-Force/Unsub Contact from Contact-List
+- [x] Add/Add-Force/Unsub Contact from Contactslist
 
 ## Dependencies
 
