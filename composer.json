@@ -2,7 +2,7 @@
   "name": "bnomei/kirby3-mailjet",
   "description": "Send transactional E-Mail and Campaigns with Mailjet",
   "type": "kirby-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "authors": [
     {
