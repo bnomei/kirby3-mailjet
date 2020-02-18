@@ -6,6 +6,7 @@ Kirby::plugin('bnomei/mailjet', [
     'options' => [
         'apikey' => null, // or callback
         'apisecret' => null, // or callback
+        'smstoken' => null, // or callback
         'email' => [
             'transport' => [
                 'type' => 'smtp',
@@ -16,7 +17,17 @@ Kirby::plugin('bnomei/mailjet', [
 //                'username' => null, // will default to apikey
 //                'password' => null, // will default to apisecret
             ]
-        ]
+        ],
+        'cache' => true,
+        'expires' => 1, // minutes
+    ],
+    'siteMethods' => [
+        'mailjetContactslists' => function() {
+            return \Bnomei\Mailjet::singleton()->contactslists();
+        },
+        'mailjetSegments' => function() {
+            return \Bnomei\Mailjet::singleton()->segments();
+        },
     ],
   ]);
 

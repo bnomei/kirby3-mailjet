@@ -5,6 +5,7 @@
 
 /tests/kirby
 /tests/logs
+/tests/site/config/config.php
 /tests/media
 /tests/site/accounts
 /tests/site/cache

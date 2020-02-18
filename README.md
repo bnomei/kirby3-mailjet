@@ -11,7 +11,7 @@
 [![Gitter](https://flat.badgen.net/badge/gitter/chat?color=982ab3)](https://gitter.im/bnomei-kirby-3-plugins/community) 
 [![Twitter](https://flat.badgen.net/badge/twitter/bnomei?color=66d9ef)](https://twitter.com/bnomei)
 
-Send transactional E-Mail and Campaigns with Mailjet
+Send transactional SMS, transactional E-Mail and Campaigns with Mailjet
 
 ## Commercial Usage
 
@@ -36,6 +36,7 @@ return [
     // other config settings ...
     'bnomei.mailjet.apikey' => 'YOUR-KEY-HERE',
     'bnomei.mailjet.apisecret' => 'YOUR-SECRET-HERE',
+    'bnomei.mailjet.smstoken' => 'YOUR-TOKEN-HERE',
 ];
 ```
 
@@ -47,6 +48,7 @@ return [
     // other config settings ...
     'bnomei.mailjet.apikey' => function() { return env('MAILJET_APIKEY'); },
     'bnomei.mailjet.apisecret' => function() { return env('MAILJET_APISECRET'); },
+    'bnomei.mailjet.smstoken' => function() { return env('MAILJET_SMSTOKEN'); },
 ];
 ```
 
@@ -62,6 +64,16 @@ Create a Mailjet Client instance and initialize it with the apikey and apisecret
 $mj = \Bnomei\Mailjet::singleton()->client();
 // or just
 $mj = mailjet()->client();
+```
+
+### Sending SMS
+
+```php
+mailjet()->sendSMS(
+    'Your Sendername',
+    '+49123456789',
+    'Your Message'
+);
 ```
 
 ### Get SMTP Transport Options
@@ -89,17 +101,93 @@ $success = kirby()->email([
 
 > TIP: Read more about [sending E-Mails with Kirby 3](https://getkirby.com/docs/guide/emails) in the docs.
 
-### Sending Campaigns
+### Contactlists and Segments
 
-Sending campaigns consists of creating and/or updating a campaign object using the Mailjet API identified by an unique ID, adding optional schedules and later issuing the publication. This plugin provides no specific helpers in that regard so please read the official docs on how to accomplish that.
+**PHP**
+
+```php
+$listID = mailjet()->contactslist('My Newsletter'); // int
+$segmentID = mailjet()->segment('VIP'); // int
+```
+
+**Panel blueprints: select field**
+
+This plugin provides two site methods `site()->mailjetContactslists()` and `site()->mailjetSegments()` which you can use in select fields to query the mailjet api.
+
+```yaml
+mj_contactslists:
+  label: Mailjet Contactslists
+  type: select
+  options: query
+  query:
+    fetch: site.mailjetContactslists # site.mailjetSegments
+    text: "{{ arrayItem.text }}"
+    value: "{{ arrayItem.value }}"
+```
+
+### Managing Contactslists
+
+```php
+$email = 'client@example.com';
+$listID = mailjet()->contactslist('My Newsletter'); // int
+$force = false;
+
+mailjet()->subscribeToContactslist($email, $listID, [
+    'Name' => get('name')
+], $force);
+mailjet()->unsubscribeFromContactslist($email, $listID);
+mailjet()->removeFromContactslist($email, $listID);
+
+mailjet()->excludeContactFromAllCampaigns($email);
+```
+
+### Managing Contact Properties
+
+```php
+$email = 'client@example.com';
+
+// get key-value array
+$props = mailjet()->getContactProperties($email);
+
+// 'name' does not exist yet 
+$doesNotExistYet = A::get($props, 'name'); // => null
+
+// create
+// https://dev.mailjet.com/email/reference/contacts/contact-properties/
+$success = mailjet()->createContactProperty('name', 'str');
+
+// set
+$props['name'] = 'Mr. Robot';
+$success = mailjet()->setContactProperties($email, $props);
+```
+
+> IMPORTANT: The `setContactProperties()` will **not** create missing properties but fail if encountering them. You have to manually create them with `createContactProperty()` or the Mailjet dashboard.
+
+### Sending Campaigns: Basic
+
+You can send a campaign via SMTP to Mailjets "magic" contactlist e-mail address. You can find that e-mail address in the Mailjet dashboard when managing a specific contactslist. They look like this `abcdefghi@lists.mailjet.com`.
+
+### Sending Campaigns: Segmentation and Schedules
+
+Sending more complex campaigns consists of creating and/or updating a campaign object using the Mailjet API identified by an unique ID, adding optional schedules and later issuing the publication. This plugin provides no specific helpers in that regard so please read the official docs on how to accomplish that (or hire me 😉).
+
+## Cache
+
+This plugin will cache certain API responses for a short time (default: 1 minute) to avoid make the same requests over and over again. This will reduce the risk of your account being temporarily suspended. 
+
+## Settings
+
+| bnomei.mailjet.              | Default        | Description               |            
+|---------------------------|----------------|---------------------------|
+| apikey | `null|callback` |  |
+| apisecret | `null|callback` |  |
+| smstoken | `null|callback` |  |
+| email | `array` | mailjet specific default transport options for Kirbys mail helper |
+| expires |`1` | in minutes |
 
 ## Roadmap
 
 - [ ] Explanation on how to use [Janitor Plugin](https://github.com/bnomei/kirby3-janitor) buttons to test and send E-Mails
-- [ ] Getter for verified Sender-E-Mail-Adresses (to use in Panel Dropdowns)
-- [ ] Getter for Contactslists (to use in Panel Dropdowns)
-- [ ] Getter for Segments (to use in Panel Dropdowns)
-- [x] Add/Add-Force/Unsub Contact from Contactslist
 
 ## Dependencies
 
