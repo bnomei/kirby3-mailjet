@@ -234,4 +234,13 @@ final class MailjetTest extends TestCase
         $this->assertEquals('Mr. Robot', A::get($props, 'name'));
         $this->assertEquals('true', A::get($props, 'bot'));
     }
+
+    public function testScheduled()
+    {
+        $this->needsAPI();
+
+        $list = \mailjet()->scheduledCampaignDrafts();
+        $this->assertIsArray($list);
+        // $this->assertTrue(count($list) > 0);
+    }
 }

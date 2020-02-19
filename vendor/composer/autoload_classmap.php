@@ -7,6 +7,12 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Bnomei\\Mailjet' => $baseDir . '/classes/Mailjet.php',
+    'Bnomei\\MailjetCampaignDraft' => $baseDir . '/classes/MailjetCampaignDraft.php',
+    'Bnomei\\MailjetContact' => $baseDir . '/classes/MailjetContact.php',
+    'Bnomei\\MailjetContactProperties' => $baseDir . '/classes/MailjetContactProperties.php',
+    'Bnomei\\MailjetContactslists' => $baseDir . '/classes/MailjetContactslists.php',
+    'Bnomei\\MailjetSMS' => $baseDir . '/classes/MailjetSMS.php',
+    'Bnomei\\MailjetSegments' => $baseDir . '/classes/MailjetSegments.php',
     'GuzzleHttp\\Client' => $vendorDir . '/guzzlehttp/guzzle/src/Client.php',
     'GuzzleHttp\\ClientInterface' => $vendorDir . '/guzzlehttp/guzzle/src/ClientInterface.php',
     'GuzzleHttp\\Cookie\\CookieJar' => $vendorDir . '/guzzlehttp/guzzle/src/Cookie/CookieJar.php',

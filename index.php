@@ -23,10 +23,18 @@ Kirby::plugin('bnomei/mailjet', [
     ],
     'siteMethods' => [
         'mailjetContactslists' => function() {
-            return \Bnomei\Mailjet::singleton()->contactslists();
+            return array_map( function($item) {
+                    return new \Kirby\Toolkit\Obj($item);
+                },
+                \Bnomei\Mailjet::singleton()->contactslists()
+            );
         },
         'mailjetSegments' => function() {
-            return \Bnomei\Mailjet::singleton()->segments();
+            return array_map( function($item) {
+                return new \Kirby\Toolkit\Obj($item);
+            },
+                \Bnomei\Mailjet::singleton()->segments()
+            );
         },
     ],
   ]);

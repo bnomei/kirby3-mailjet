@@ -169,7 +169,9 @@ You can send a campaign via SMTP to Mailjets "magic" contactlist e-mail address.
 
 ### Sending Campaigns: Segmentation and Schedules
 
-Sending more complex campaigns consists of creating and/or updating a campaign object using the Mailjet API identified by an unique ID, adding optional schedules and later issuing the publication. This plugin provides no specific helpers in that regard so please read the official docs on how to accomplish that (or hire me 😉).
+Sending more complex campaigns consists of creating and/or updating a campaign object using the Mailjet API identified by an unique ID, setting the contactslist, adding optional segmentation or schedules and later issuing tests or the publication.
+
+> NOTE: Work in progress...
 
 ## Cache
 

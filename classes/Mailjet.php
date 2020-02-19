@@ -6,7 +6,6 @@ namespace Bnomei;
 
 use Kirby\Toolkit\A;
 use \Mailjet\Client;
-use \Mailjet\Resources;
 
 final class Mailjet
 {
@@ -15,6 +14,26 @@ final class Mailjet
 
     /** @var array */
     private $options;
+    /**
+     * @var MailjetContact
+     */
+    private $contact;
+    /**
+     * @var MailjetContactProperties
+     */
+    private $contactProperties;
+    /**
+     * @var MailjetSegments
+     */
+    private $segments;
+    /**
+     * @var MailjetSMS
+     */
+    private $sms;
+    /**
+     * @var MailjetContactslists
+     */
+    private $contactlists;
 
     /**
      * Mailjet constructor.
@@ -45,6 +64,13 @@ final class Mailjet
             true,
             ['version' => 'v3']
         );
+
+        $this->contact = new MailjetContact($this->client);
+        $this->contactProperties = new MailjetContactProperties($this->client);
+        $this->contactlists = new MailjetContactslists($this->client, $this->contact, $this->contactProperties);
+        $this->segments = new MailjetSegments($this->client);
+        $this->sms = new MailjetSMS((string) $this->option('smstoken'));
+        $this->campaigns = new MailjetCampaignDraft($this->client);
 
         if ($this->option('debug')) {
             kirby()->cache('bnomei.mailjet')->flush();
@@ -82,8 +108,8 @@ final class Mailjet
     {
         return array_merge(
             [
-                'username' => $this->options['apikey'],
-                'password' => $this->options['apisecret'],
+                'username' => $this->option('apikey'),
+                'password' => $this->option('apisecret'),
             ],
             option('bnomei.mailjet.email.transport')
         );
@@ -100,364 +126,121 @@ final class Mailjet
         ]));
     }
 
-    public function contactslists(): array
+    /**
+     * @param string $key
+     * @return mixed|null
+     * @throws \Kirby\Exception\InvalidArgumentException
+     */
+    private function cacheRead(string $key)
     {
-        $contactslists = kirby()->cache('bnomei.mailjet')->get(
-            $this->cacheKey('contactslists')
-        );
-        if ($contactslists && !$this->option('debug')) {
-            return $contactslists;
+        if ($this->option('debug')) {
+            return null;
         }
-
-        $contactslists = [];
-        $response = $this->client()->get(Resources::$Contactslist, ['body' => null]);
-        if ($response->success()) {
-            foreach ($response->getData() as $segment) {
-                $contactslists[] = [
-                    'text' => A::get($segment, 'Name'),
-                    'value' => A::get($segment, 'ID'),
-                ];
-            }
-        }
-
-        kirby()->cache('bnomei.mailjet')->set(
-            $this->cacheKey('contactslists'),
-            $contactslists,
-            (int)$this->option('expire')
+        return kirby()->cache('bnomei.mailjet')->get(
+            $this->cacheKey($key)
         );
-
-        return $contactslists;
     }
 
-    /**
-     * Get Contactlist ID by name
-     *
-     * @param int|string $name
-     * @return int|null
-     */
+    private function cacheWrite(string $key, $value): bool
+    {
+        if ($this->option('debug')) {
+            return false;
+        }
+        return kirby()->cache('bnomei.mailjet')->set(
+            $this->cacheKey($key),
+            $value,
+            (int) $this->option('expire')
+        );
+    }
+
+    public function sendSMS(string $from, string $to, string $text): bool
+    {
+        return $this->sms->send($from, $to, $text);
+    }
+
+    public function excludeContactFromAllCampaigns(string $email): bool
+    {
+        return $this->contact->exclude($email);
+    }
+
+    public function contactslists(): array
+    {
+        if ($cache = $this->cacheRead('contactslists')) {
+            return $cache;
+        }
+        $value = $this->contactlists->all();
+        $this->cacheWrite('contactslists', $value);
+        return $value;
+    }
+
     public function contactslist($name): ?int
     {
-        $response = kirby()->cache('bnomei.mailjet')->get(
-            $this->cacheKey('contactslist-' . $name)
-        );
-        if ($response && !$this->option('debug')) {
-            return $response;
+        if ($cache = $this->cacheRead('contactslist-' . $name)) {
+            return $cache;
         }
+        $value = $this->contactlists->getId($name);
+        $this->cacheWrite('contactslist-' . $name, $value);
+        return $value;
+    }
 
-        $id = null;
-        if (ctype_digit($name)) {
-            $id = intval($name);
+    public function removeFromContactslist(string $email, int $contactslistID): bool
+    {
+        return $this->contactlists->remove($email, $contactslistID);
+    }
 
-        } else {
-            $response = $this->client()->get(
-                Resources::$Contactslist,
-                ['filters' => ['Name' => $name], 'body' => null]
-            );
-            if ($response->success()) {
-                foreach ($response->getData() as $r) {
-                    if ($r['Name'] === $name) {
-                        $id = intval($r['ID']);
-                        break;
-                    }
-                }
-            }
-        }
+    public function unsubscribeFromContactslist(string $email, int $contactslistID): bool
+    {
+        return $this->contactlists->unsubscribe($email, $contactslistID);
+    }
 
-        if ($id) {
-            kirby()->cache('bnomei.mailjet')->set(
-                $this->cacheKey('contactslist-' . $name),
-                $id,
-                (int)$this->option('expire')
-            );
-            return $id;
-        }
-
-        return null;
+    public function subscribeToContactslist(string $email, int $contactslistID, array $contactData = [], bool $force = false): bool
+    {
+        return $this->contactlists->subscribe($email, $contactslistID, $contactData, $force);
     }
 
     public function segments(): array
     {
-        $segments = kirby()->cache('bnomei.mailjet')->get(
-            $this->cacheKey('segments')
-        );
-        if ($segments && !$this->option('debug')) {
-            return $segments;
+        if ($cache = $this->cacheRead('segments')) {
+            return $cache;
         }
-
-        $segments = [];
-        $response = $this->client()->get(Resources::$Contactfilter, ['body' => null]);
-        if ($response->success()) {
-            foreach ($response->getData() as $segment) {
-                $segments[] = [
-                    'text' => A::get($segment, 'Name'),
-                    'value' => A::get($segment, 'ID'),
-                ];
-            }
-        }
-
-        kirby()->cache('bnomei.mailjet')->set(
-            $this->cacheKey('segments'),
-            $segments,
-            (int)$this->option('expire')
-        );
-
-        return $segments;
+        $value = $this->segments->all();
+        $this->cacheWrite('contactslists', $value);
+        return $value;
     }
 
-    /**
-     * Get Segment ID by name
-     *
-     * @param int|string $name
-     * @return int|null
-     */
     public function segment($name): ?int
     {
-        $response = kirby()->cache('bnomei.mailjet')->get(
-            $this->cacheKey('segment-' . $name)
-        );
-        if ($response && !$this->option('debug')) {
-            return $response;
+        if ($cache = $this->cacheRead('segment-' . $name)) {
+            return $cache;
         }
-
-        $id = null;
-        if (ctype_digit($name)) {
-            $segid = intval($name);
-            $response = $this->client()->get(Resources::$Contactfilter, ['body' => null]);
-            foreach ($response->getData() as $r) {
-                if ($segid === intval($r['ID'])) {
-                    $id = intval($r['ID']);
-                    break;
-                }
-            }
-
-        } else {
-            $response = $this->client()->get(
-                Resources::$Contactfilter,
-                ['filters' => ['Name' => $name], 'body' => null]
-            );
-            foreach ($response->getData() as $r) {
-                if ($name === $r['Name']) {
-                    $id = intval($r['ID']);
-                    break;
-                }
-            }
-        }
-
-        if ($id) {
-            kirby()->cache('bnomei.mailjet')->set(
-                $this->cacheKey('segment-' . $name),
-                $id,
-                (int)$this->option('expire')
-            );
-            return $id;
-        }
-
-        return null;
+        $value = $this->segments->getId($name);
+        $this->cacheWrite('segment-' . $name, $value);
+        return $value;
     }
 
-    /**
-     * @param string $email
-     * @return array|null
-     */
     public function getContactProperties(string $email): ?array
     {
-        // find
-        $response = $this->client()->get(Resources::$Contactdata, [
-            'id' => strtolower($email),
-            'body' => null
-        ]);
-
-        if ($response->success()) {
-            $dataKV = [];
-            foreach(A::get($response->getData()[0], 'Data', []) as $item) {
-                $dataKV[$item['Name']] = $item['Value'];
-            }
-            return $dataKV;
-        }
-
-        return null;
+        return $this->contactProperties->get($email);
     }
 
-    /**
-     * @param string $email
-     * @param array $data
-     * @return bool
-     */
     public function setContactProperties(string $email, array $data): bool
     {
-        // find
-        $response = $this->client()->get(Resources::$Contactdata, [
-            'id' => strtolower($email),
-            'body' => null
-        ]);
-
-        // does exist
-        if ($response->success() && count($data)) {
-            $dataToAdd = [];
-            foreach ($data as $key => $value) {
-                if (strtolower($key) === 'email') {
-                    continue;
-                }
-                $dataToAdd[] = ['Name' => $key, 'Value' => $value];
-            }
-            $response = $this->client()->put(Resources::$Contactdata, [
-                'id' => $email,
-                'body' => ['Data' => $dataToAdd]
-            ]);
-            return $response->getStatus() === 200;
-        }
-
-        return false;
+        return $this->contactProperties->set($email, $data);
     }
 
-    public function createContactProperty(string $name, string $type = 'str', string $namespace = 'static') {
-        $response = $this->client()->post(Resources::$Contactmetadata, [
-            'body' => [
-                'Datatype' => $type,
-                'Name' => $name,
-                'NameSpace' => $namespace,
-            ]
-        ]);
-        return $response->getStatus() === 200;
-    }
-
-    /**
-     * Add a Contact to Mailjet
-     *
-     * @param string $email
-     * @return bool
-     */
-    private function addContact(string $email): bool
+    public static function createContactProperty(string $name, string $type = 'str', string $namespace = 'static')
     {
-        // find
-        $response = $this->client()->get(Resources::$Contact, [
-            'id' => strtolower($email),
-            'body' => null
-        ]);
-
-        // does not exist yet
-        if (! $response->success()) {
-            $response = $this->client()->post(Resources::$Contact, ['body' => [
-                'Email' => strtolower($email),
-            ]]);
-        }
-
-        return $response->success();
+        return MailjetContactProperties::create($name, $type, $namespace);
     }
 
-    /**
-     * @param string $email
-     * @return bool
-     */
-    public function excludeContactFromAllCampaigns(string $email): bool
+    public function scheduledCampaignDrafts(): ?array
     {
-        // find
-        $response = $this->client()->get(Resources::$Contact, [
-            'id' => strtolower($email),
-            'body' => null
-        ]);
-
-        // does exist
-        if ($response->success()) {
-            $response = $this->client()->put(
-                Resources::$Contact, [
-                    'id' => strtolower($email),
-                    'body' => ['IsExcludedFromCampaigns' => 'true']
-                ]
-            );
+        if ($cache = $this->cacheRead('scheduled')) {
+            return $cache;
         }
-
-        return $response->success();
-    }
-
-    /**
-     * @param string $email
-     * @param int $contactslistID
-     * @return bool
-     */
-    public function removeFromContactslist(string $email, int $contactslistID): bool
-    {
-        $response = $this->client()->post(
-            Resources::$ContactslistManagecontact, [
-                'id' => $contactslistID,
-                'body' => ['Email' => $email, 'Action' => 'remove']
-            ]
-        );
-
-        return $response->success();
-    }
-
-    /**
-     * @param string $email
-     * @param int $contactslistID
-     * @return bool
-     */
-    public function unsubscribeFromContactslist(string $email, int $contactslistID): bool
-    {
-        $response = $this->client()->post(
-            Resources::$ContactslistManagecontact, [
-                'id' => $contactslistID,
-                'body' => ['Email' => $email, 'Action' => 'unsub']
-            ]
-        );
-        if ($response->success()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param string $email
-     * @param int $contactslistID
-     * @param array $contactData
-     * @param bool $force
-     * @return bool
-     */
-    public function subscribeToContactslist(string $email, int $contactslistID, array $contactData = [], bool $force = false): bool
-    {
-        if ($this->addContact($email) === false) {
-            return false;
-        }
-
-        $response = $this->client()->post(
-            Resources::$ContactManagecontactslists,
-            ['id' => $email, 'body' => ['ContactsLists' => [[
-                'ListID' => $contactslistID,
-                'Action' => $force ? 'addforce' : 'addnoforce',
-            ]]]]
-        );
-
-        if ($response->success()) {
-            return $this->setContactProperties($email, $contactData);
-        }
-
-        return $response->success();
-    }
-
-    /**
-     * @param string $from
-     * @param string $to
-     * @param string $text
-     * @return bool
-     */
-    public function sendSMS(string $from, string $to, string $text): bool
-    {
-        $client = new \GuzzleHttp\Client();
-
-        $response = $client->post(
-            'https://api.mailjet.com/v4/sms-send',
-            [
-                'Authorization' => 'Bearer ' . $this->option('smstoken'),
-                'json' => [
-                    'From' => $from,
-                    'To' => $to,
-                    'Text' => $text
-                ],
-            ]
-        );
-
-        return $response->getStatusCode() === 200;
+        $value = MailjetCampaignDraft::scheduled();
+        $this->cacheWrite('scheduled', $value);
+        return $value;
     }
 
     /** @var \Bnomei\Mailjet */

@@ -1,0 +1,18 @@
+fields:
+  mj_contactslists:
+    label: Mailjet Contactslists
+    type: select
+    options: query
+    query:
+      fetch: site.mailjetContactslists # site.mailjetSegments
+      text: "{{ arrayItem.text }}"
+      value: "{{ arrayItem.value }}"
+
+  mj_segments:
+    label: Mailjet Segments
+    type: select
+    options: query
+    query:
+      fetch: site.mailjetSegments
+      text: "{{ arrayItem.text }}"
+      value: "{{ arrayItem.value }}"

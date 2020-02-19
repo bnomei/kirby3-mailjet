@@ -32,3 +32,4 @@
 /vendor/getkirby/composer-installer
 coverage.xml
 /vendor/**/Dockerfile
+/tests/site/sessions/
