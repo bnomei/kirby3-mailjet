@@ -20,6 +20,19 @@ Kirby::plugin('bnomei/mailjet', [
         ],
         'cache' => true,
         'expires' => 1, // minutes
+        'log.enabled' => false,
+        'log' => function (string $msg, string $level = 'info', array $context = []): bool {
+            if (option('bnomei.mailjet.log.enabled')) {
+                if (function_exists('monolog')) {
+                    monolog()->{$level}($msg, $context);
+                }
+                else if (function_exists('kirbyLog')) {
+                    kirbyLog('bnomei.janitor.log')->log($msg, $level, $context);
+                }
+                return true;
+            }
+            return false;
+        },
     ],
     'siteMethods' => [
         'mailjetContactslists' => function() {

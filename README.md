@@ -70,8 +70,8 @@ $mj = mailjet()->client();
 
 ```php
 mailjet()->sendSMS(
-    'Your Sendername',
-    '+49123456789',
+    '+499876543210', // from
+    '+490123456789', // to
     'Your Message'
 );
 ```
@@ -169,9 +169,7 @@ You can send a campaign via SMTP to Mailjets "magic" contactlist e-mail address.
 
 ### Sending Campaigns: Segmentation and Schedules
 
-Sending more complex campaigns consists of creating and/or updating a campaign object using the Mailjet API identified by an unique ID, setting the contactslist, adding optional segmentation or schedules and later issuing tests or the publication.
-
-> NOTE: Work in progress...
+Sending more complex campaigns consists of creating and/or updating a campaign object using the Mailjet API identified by an unique ID, setting the contactslist, adding optional segmentation or schedules and later issuing tests or the publication. This plugin provides a [few helpers](https://github.com/bnomei/kirby3-mailjet/tree/master/examples/campaigndraft.php) to get you started.
 
 ## Cache
 

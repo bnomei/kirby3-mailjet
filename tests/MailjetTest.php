@@ -192,9 +192,9 @@ final class MailjetTest extends TestCase
         $this->needsAPI();
 
         $success = \mailjet()->sendSMS(
-            'Kirby Mailjet PHPUnit',
-            option('sms.target'),
-            'This is a test.'
+            option('sms.from'),
+            option('sms.to'),
+            'This is a "test". 🕷'
         );
         $this->assertTrue($success);
     }

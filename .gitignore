@@ -33,3 +33,4 @@
 coverage.xml
 /vendor/**/Dockerfile
 /tests/site/sessions/
+/tests/site/logs/

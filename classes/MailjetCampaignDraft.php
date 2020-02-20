@@ -7,6 +7,34 @@ namespace Bnomei;
 use Mailjet\Client;
 use Mailjet\Resources;
 
+/**
+ * @method setLocale(string $value): self
+ * @method setSender(int $value): self
+ * @method setSenderemail(string $value): self
+ * @method setSubject(string $value): self
+ * @method setTitle(string $value): self
+ * @method setDatetime(\DateTime $value): self
+ * @method setTemplate(int $value): self
+ * @method setText(string $value): self
+ * @method setHtml(string $value): self
+ * @method setUrl(string $value): self
+ * @method setContactslist(int $value): self
+ * @method setSegment(int $value): self
+ * @method setCampaign(int $value): self
+ * @method getLocale(): ?string
+ * @method getSender(): ?int
+ * @method getSenderemail(): ?string
+ * @method getSubject(): ?string
+ * @method getTitle(): ?string
+ * @method getDatetime(): ?\Datetime
+ * @method getTemplate(): ?int
+ * @method getText(): ?string
+ * @method getHtml(): ?string
+ * @method getUrl(): ?string
+ * @method getContactslist(): ?int
+ * @method getSegment(): ?int
+ * @method getCampaign(): ?int
+ */
 final class MailjetCampaignDraft
 {
     /** @var Client */
@@ -14,9 +42,9 @@ final class MailjetCampaignDraft
     /** @var string|null */
     private $locale;
     /** @var string|null */
-    private $name;
+    private $sender;
     /** @var string */
-    private $from;
+    private $senderemail;
     /** @var string */
     private $subject;
     /** @var string */
@@ -31,19 +59,6 @@ final class MailjetCampaignDraft
     private $datetime;
     /** @var int|null */
     private $template;
-
-    public static $fluentProperties = [
-        'locale',
-        'name',
-        'from',
-        'to',
-        'subject',
-        'title',
-        'datetime',
-        'template',
-        'text',
-        'html',
-    ];
     /** @var int|null */
     private $segment;
     /** @var int|null */
@@ -51,9 +66,30 @@ final class MailjetCampaignDraft
     /** @var int|null */
     private $campaign;
 
-    public function __construct(Client $client)
+    public static $fluentProperties = [
+        'locale',
+        'sender',
+        'senderemail',
+        'subject',
+        'title',
+        'datetime',
+        'template',
+        'text',
+        'html',
+        'url',
+        'contactslist',
+        'segment',
+        'campaign',
+    ];
+    /**
+     * @var MailjetLog
+     */
+    private $log;
+
+    public function __construct(Client $client, MailjetLog $log)
     {
         $this->client = $client;
+        $this->log = $log;
     }
 
     public function __call(string $name, $arguments)
@@ -77,9 +113,9 @@ final class MailjetCampaignDraft
         $key = array_search($name, $getters);
         if ($key !== false) {
             return $this->{static::$fluentProperties[$key]};
+        } else {
+            throw new \Exception('Invalid getter: ' . $name);
         }
-
-        return null;
     }
 
     private function set(string $name, $value): self
@@ -91,6 +127,8 @@ final class MailjetCampaignDraft
         $key = array_search($name, $setters);
         if ($key !== false) {
             $this->{static::$fluentProperties[$key]} = $value;
+        } else {
+            throw new \Exception('Invalid getter: ' . $name);
         }
 
         return $this;
@@ -104,7 +142,6 @@ final class MailjetCampaignDraft
     public function saveDraft(): bool
     {
         $wasCreated = false;
-
 
         $campaign = $this->findDraft();
         if (is_null($campaign)) {
@@ -121,12 +158,14 @@ final class MailjetCampaignDraft
                 'ID' => $this->campaign,
                 'Body' => $this->bodyFull(),
             ]);
+            $this->log->write('saveDraft.put', 'info', $response->getData());
         }
 
         $response = $this->client->post(Resources::$CampaigndraftDetailcontent, [
             'ID' => $this->campaign,
             'Body' => $this->detailContent(),
         ]);
+        $this->log->write('saveDraft.detailcontent.post', 'info', $response->getData());
 
         return $response->success();
     }
@@ -159,12 +198,12 @@ final class MailjetCampaignDraft
     {
         $body = [
             'Locale' => $this->locale,
-            'Sender' => $this->name,
-            'SenderEmail' => $this->from,
+            'Sender' => $this->sender,
+            'SenderEmail' => $this->senderemail,
             'Subject' => $this->subject,
             'Title' => $this->title,
             'Url' => $this->url,
-            'Contactslist' => $this->contactslist,
+            'ContactsListID' => $this->contactslist,
             'SegmentationID' => $this->segment,
             'TemplateID' => $this->template,
         ];
@@ -172,6 +211,9 @@ final class MailjetCampaignDraft
         $body = array_filter($body, static function($value) {
            return ! is_null($value) && strlen(trim(strval($value))) > 0;
         });
+        $body = array_map(static function($value) {
+            return strval($value);
+        }, $body);
 
         return $body;
     }
@@ -185,6 +227,9 @@ final class MailjetCampaignDraft
         $response = $this->client->get(Resources::$Campaigndraft, [
             'Filters' => $this->bodyUnique(),
         ]);
+
+        $this->log->write('findDraft', 'debug', $response->getData());
+
         return $response->success() && count($response->getData()) ?
             $response->getData()[0]['ID'] :
             null;
@@ -195,6 +240,10 @@ final class MailjetCampaignDraft
         $response = $this->client->post(Resources::$Campaigndraft, [
             'Body' => $this->bodyFull(),
         ]);
+
+        var_dump($this->bodyFull());
+
+        $this->log->write('createDraft', 'debug', $response->getData());
 
         return $response->success() && count($response->getData()) ?
             $response->getData()[0]['ID'] :
@@ -211,7 +260,20 @@ final class MailjetCampaignDraft
             'ID' => $this->campaign
         ]);
 
-        return $exists->success() ? $exists->getData()[0]['Status'] : null;
+        return $exists->success() ? strtolower($exists->getData()[0]['Status']) : null;
+    }
+
+    public function statusSchedule(): ?string
+    {
+        if (! $this->campaign) {
+            return null;
+        }
+
+        $exists = $this->client->get(Resources::$CampaigndraftSchedule, [
+            'ID' => $this->campaign
+        ]);
+
+        return $exists->success() ? strtolower($exists->getData()[0]['Status']) : null;
     }
 
     public function test(string $email): bool
@@ -230,10 +292,10 @@ final class MailjetCampaignDraft
 
     public function send(): bool
     {
-        $response = $this->client->post(Resources::$CampaigndraftSchedule, [
+        $response = $this->client->post(Resources::$CampaigndraftSend, [
             'ID' => $this->campaign
         ]);
-        return $response->success() ? in_array($response->getData()['Data'][0]['Status'], ['programmed', 'sent']) : false;
+        return $response->success() ? in_array($response->getData()[0]['Status'], ['programmed', 'sent']) : false;
     }
 
     public function schedule(): bool
@@ -241,24 +303,39 @@ final class MailjetCampaignDraft
         if (! $this->campaign || ! $this->datetime) {
             return false;
         }
-        $status = $this->status();
+        $status = $this->statusSchedule();
+        var_dump($status);
 
         // new
         if (! $status) {
             $response = $this->client->post(Resources::$CampaigndraftSchedule, [
                 'ID' => $this->campaign,
-                'Body' => ['Date' => $this->datetime->format('c')]
+                'Body' => [
+                    'Date' => substr(
+                        $this->datetime->format('c'),
+                        0,
+                        strlen('2018-01-01T00:00:00')
+                    )
+                ]
             ]);
-            return $response->success() ? $response->getData()['Data'][0]['Status'] === 'Programmed' : false;
+            var_dump($response->getData());
+            return $response->success() ? $response->getData()[0]['Status'] === 'programmed' : false;
         }
 
         // put
-        if (in_array($status, ['Programmed', 'Draft'])) {
+        if (in_array($status, ['programmed', 'draft'])) {
             $response = $this->client->put(Resources::$CampaigndraftSchedule, [
                 'ID' => $this->campaign,
-                'Body' => ['Date' => $this->datetime->format('c')]
+                'Body' => [
+                    'Date' => substr(
+                        $this->datetime->format('c'),
+                        0,
+                        strlen('2018-01-01T00:00:00')
+                    )
+                ]
             ]);
-            return $response->success() ? $response->getData()['Data'][0]['Status'] === 'Programmed' : false;
+            var_dump($response->getData());
+            return $response->success() ? $response->getData()[0]['Status'] === 'programmed' : false;
         }
 
         return false;
@@ -292,6 +369,12 @@ final class MailjetCampaignDraft
             ]
         ]);
 
-        return $response->success() && count($response->getData()) ? $response->getData()[0]['Data'] : [];
+        return $response->success() && count($response->getData()) ?
+            array_map(static function($value) {
+                return [
+                    'Name' => $value['Subject'],
+                    'Value' => $value['ID'],
+                ];
+            }, $response->getData()) : [];
     }
 }

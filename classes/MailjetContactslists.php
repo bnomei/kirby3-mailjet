@@ -20,12 +20,22 @@ final class MailjetContactslists
 
     /** @var MailjetContactProperties */
     private $contactProperties;
+    /**
+     * @var MailjetLog
+     */
+    private $log;
 
-    public function __construct(Client $client, MailjetContact $contact, MailjetContactProperties $contactProperties)
+    public function __construct(
+        Client $client,
+        MailjetContact $contact,
+        MailjetContactProperties $contactProperties,
+        MailjetLog $log
+    )
     {
         $this->client = $client;
         $this->contact = $contact;
         $this->contactProperties = $contactProperties;
+        $this->log = $log;
     }
 
     public function all(): array

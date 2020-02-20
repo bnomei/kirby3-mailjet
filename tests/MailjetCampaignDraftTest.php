@@ -15,6 +15,10 @@ final class MailjetCampaignDraftTest extends TestCase
      * @var MailjetCampaignDraft
      */
     private $campaign;
+    /**
+     * @var Closure
+     */
+    private $log;
 
     private function needsAPI(): void
     {
@@ -26,14 +30,13 @@ final class MailjetCampaignDraftTest extends TestCase
     public function setUp(): void
     {
         $this->to = \option('campaign.test.to.email');
-        $this->fromName = \option('campaign.test.from.name');
         $this->from = \option('campaign.test.from.email');
 
-        $this->campaign = new MailjetCampaignDraft(mailjet()->client());
+        $this->campaign = \mailjet()->campaignDraft();
         $this->campaign
             ->setLocale('de_DE') // required
-            ->setName($this->fromName)
-            ->setFrom($this->from);
+            ->setSender(\mailjet()->sender($this->from))
+            ->setSenderemail($this->from);
     }
 
     public function testTest()
@@ -59,33 +62,27 @@ final class MailjetCampaignDraftTest extends TestCase
         $this->needsAPI();
 
         $subject = md5((string) microtime());
+        $list = \mailjet()->contactslist('BNOMEI');
 
         $success = $this->campaign
-            ->setSubject($subject) // required
+            ->setSubject($subject)
+            ->setContactslist($list)
+            ->setText('Voi-La')
+            ->setHtml('<i>Voi</i>-La')
             ->saveDraft();
         $this->assertTrue($success);
 
-        $success = $this->campaign
-            ->setDatetime(new \DateTime('+1 day'))
-            ->schedule();
+        $success = $this->campaign->send();
         $this->assertTrue($success);
-
-        $success = $this->campaign->cancelSchedule();
-        $this->assertTrue($success);
-
-        // TODO:
-        // $success = $this->campaign->send();
-        // $this->assertTrue($success);
     }
 
     public function testUpdateExisting()
     {
         $this->needsAPI();
 
-        // load
         $success = $this->campaign
             ->setSubject('Album of the week') // required
-            ->saveDraft();
+            ->saveDraft(); // load since local and subject match
         $this->assertTrue($success);
 
         $id = \option('campaign.test.id');
@@ -98,6 +95,43 @@ final class MailjetCampaignDraftTest extends TestCase
             ->saveDraft();
         $this->assertTrue($success);
         $this->assertEquals($id, $this->campaign->id());
+
+
+        $success = $this->campaign
+            ->setSubject('Album of the week') // required
+            ->saveDraft(); // load since local and subject match
+        $this->assertTrue($success);
+    }
+
+    public function testCancelScheduled()
+    {
+        $this->needsAPI();
+
+        $subject = md5((string) microtime());
+        $list = \mailjet()->contactslist('TEST');
+
+        foreach ([1,2,3] as $num) {
+            $success = $this->campaign
+                ->setSubject($subject . ' ' . $num)
+                ->setContactslist($list)
+                ->setDatetime(new \DateTime('+1 day'))
+                ->setText('Gogol ' . $num)
+                ->setHtml('<b>G</b>ogol ' . $num)
+                ->saveDraft();
+            $this->assertTrue($success);
+
+            $success = $this->campaign
+                ->schedule();
+            $this->assertTrue($success);
+        }
+
+        // cached: \mailjet()->scheduledCampaignDrafts()
+        // live: MailjetCampaignDraft::scheduled()
+        foreach (MailjetCampaignDraft::scheduled() as $draft) {
+            $campaign = \mailjet()->campaignDraft($draft['Value']);
+            $success = $campaign->cancelSchedule();
+            $this->assertTrue($success);
+        }
     }
 
     // TODO: testUpdateExistingWithDifferentContactslist

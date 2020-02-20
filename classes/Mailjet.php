@@ -6,6 +6,7 @@ namespace Bnomei;
 
 use Kirby\Toolkit\A;
 use \Mailjet\Client;
+use Mailjet\Resources;
 
 final class Mailjet
 {
@@ -34,6 +35,10 @@ final class Mailjet
      * @var MailjetContactslists
      */
     private $contactlists;
+    /**
+     * @var MailjetLog
+     */
+    private $log;
 
     /**
      * Mailjet constructor.
@@ -44,6 +49,7 @@ final class Mailjet
     {
         $defaults = [
             'debug' => option('debug'),
+            'log' => option('bnomei.mailjet.log'),
             'expire' => option('bnomei.mailjet.expire', 1),
             'apikey' => option('bnomei.mailjet.apikey'),
             'apisecret' => option('bnomei.mailjet.apisecret'),
@@ -52,7 +58,7 @@ final class Mailjet
         $this->options = array_merge($defaults, $options);
 
         foreach ($this->options as $key => $callable) {
-            if (is_callable($callable) && in_array($key, ['apikey', 'apisecret'])) {
+            if (is_callable($callable) && in_array($key, ['apikey', 'apisecret', 'smstoken'])) {
                 $this->options[$key] = trim($callable()) . '';
 
             }
@@ -65,12 +71,12 @@ final class Mailjet
             ['version' => 'v3']
         );
 
+        $this->log = new MailjetLog((bool)$this->option('debug'), $this->option('log'));
         $this->contact = new MailjetContact($this->client);
         $this->contactProperties = new MailjetContactProperties($this->client);
-        $this->contactlists = new MailjetContactslists($this->client, $this->contact, $this->contactProperties);
+        $this->contactlists = new MailjetContactslists($this->client, $this->contact, $this->contactProperties, $this->log);
         $this->segments = new MailjetSegments($this->client);
-        $this->sms = new MailjetSMS((string) $this->option('smstoken'));
-        $this->campaigns = new MailjetCampaignDraft($this->client);
+        $this->sms = new MailjetSMS((string) $this->option('smstoken'), $this->log);
 
         if ($this->option('debug')) {
             kirby()->cache('bnomei.mailjet')->flush();
@@ -158,9 +164,29 @@ final class Mailjet
         return $this->sms->send($from, $to, $text);
     }
 
+    public function campaignDraft(?int $campaign = null): MailjetCampaignDraft
+    {
+        $draft = new MailjetCampaignDraft($this->client, $this->log);
+        if ($campaign) {
+            $draft->setCampaign($campaign);
+        }
+        return $draft;
+    }
+
     public function excludeContactFromAllCampaigns(string $email): bool
     {
         return $this->contact->exclude($email);
+    }
+
+    public function sender(string $email): ?int
+    {
+        if ($cache = $this->cacheRead('sender-' . $email)) {
+            return $cache;
+        }
+        $response = $this->client->get(Resources::$Sender, ['id' => $email]);
+        $value = $response->success() ? $response->getData()[0]['ID'] : null;
+        $this->cacheWrite('sender-' . $email, $value);
+        return $value;
     }
 
     public function contactslists(): array

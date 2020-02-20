@@ -77,6 +77,7 @@ class ComposerStaticInit0429f6c6fb5ed5b7111d8809533e6d52
         'Bnomei\\MailjetContact' => __DIR__ . '/../..' . '/classes/MailjetContact.php',
         'Bnomei\\MailjetContactProperties' => __DIR__ . '/../..' . '/classes/MailjetContactProperties.php',
         'Bnomei\\MailjetContactslists' => __DIR__ . '/../..' . '/classes/MailjetContactslists.php',
+        'Bnomei\\MailjetLog' => __DIR__ . '/../..' . '/classes/MailjetLog.php',
         'Bnomei\\MailjetSMS' => __DIR__ . '/../..' . '/classes/MailjetSMS.php',
         'Bnomei\\MailjetSegments' => __DIR__ . '/../..' . '/classes/MailjetSegments.php',
         'GuzzleHttp\\Client' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Client.php',

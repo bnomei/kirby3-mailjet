@@ -11,6 +11,7 @@ return array(
     'Bnomei\\MailjetContact' => $baseDir . '/classes/MailjetContact.php',
     'Bnomei\\MailjetContactProperties' => $baseDir . '/classes/MailjetContactProperties.php',
     'Bnomei\\MailjetContactslists' => $baseDir . '/classes/MailjetContactslists.php',
+    'Bnomei\\MailjetLog' => $baseDir . '/classes/MailjetLog.php',
     'Bnomei\\MailjetSMS' => $baseDir . '/classes/MailjetSMS.php',
     'Bnomei\\MailjetSegments' => $baseDir . '/classes/MailjetSegments.php',
     'GuzzleHttp\\Client' => $vendorDir . '/guzzlehttp/guzzle/src/Client.php',
