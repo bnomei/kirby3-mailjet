@@ -158,14 +158,14 @@ final class MailjetCampaignDraft
                 'ID' => $this->campaign,
                 'Body' => $this->bodyFull(),
             ]);
-            $this->log->write('saveDraft.put', 'info', $response->getData());
+            // $this->log->write('saveDraft.put', 'info', $response->getData());
         }
 
         $response = $this->client->post(Resources::$CampaigndraftDetailcontent, [
             'ID' => $this->campaign,
             'Body' => $this->detailContent(),
         ]);
-        $this->log->write('saveDraft.detailcontent.post', 'info', $response->getData());
+        // $this->log->write('saveDraft.detailcontent.post', 'info', $response->getData());
 
         return $response->success();
     }
@@ -227,8 +227,7 @@ final class MailjetCampaignDraft
         $response = $this->client->get(Resources::$Campaigndraft, [
             'Filters' => $this->bodyUnique(),
         ]);
-
-        $this->log->write('findDraft', 'debug', $response->getData());
+        //$this->log->write('findDraft', 'debug', $response->getData());
 
         return $response->success() && count($response->getData()) ?
             $response->getData()[0]['ID'] :
@@ -240,10 +239,7 @@ final class MailjetCampaignDraft
         $response = $this->client->post(Resources::$Campaigndraft, [
             'Body' => $this->bodyFull(),
         ]);
-
-        var_dump($this->bodyFull());
-
-        $this->log->write('createDraft', 'debug', $response->getData());
+        // $this->log->write('createDraft', 'debug', $response->getData());
 
         return $response->success() && count($response->getData()) ?
             $response->getData()[0]['ID'] :
@@ -304,7 +300,6 @@ final class MailjetCampaignDraft
             return false;
         }
         $status = $this->statusSchedule();
-        var_dump($status);
 
         // new
         if (! $status) {
@@ -318,7 +313,7 @@ final class MailjetCampaignDraft
                     )
                 ]
             ]);
-            var_dump($response->getData());
+
             return $response->success() ? $response->getData()[0]['Status'] === 'programmed' : false;
         }
 
@@ -334,7 +329,7 @@ final class MailjetCampaignDraft
                     )
                 ]
             ]);
-            var_dump($response->getData());
+
             return $response->success() ? $response->getData()[0]['Status'] === 'programmed' : false;
         }
 
