@@ -22,7 +22,8 @@ $draft
 $draft->test('best.buddy@friends.design');
 
 // set a schedule
-$draft->setDatetime(new DateTime('+3 days'))->schedule();
+$draft->setDatetime(new DateTime('+3 days'))->saveDraft();
+$draft->schedule();
 // or cancel it
 $draft->cancelSchedule();
 
