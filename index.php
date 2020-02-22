@@ -25,8 +25,7 @@ Kirby::plugin('bnomei/mailjet', [
             if (option('bnomei.mailjet.log.enabled')) {
                 if (function_exists('monolog')) {
                     monolog()->{$level}($msg, $context);
-                }
-                else if (function_exists('kirbyLog')) {
+                } elseif (function_exists('kirbyLog')) {
                     kirbyLog('bnomei.janitor.log')->log($msg, $level, $context);
                 }
                 return true;
@@ -35,17 +34,19 @@ Kirby::plugin('bnomei/mailjet', [
         },
     ],
     'siteMethods' => [
-        'mailjetContactslists' => function() {
-            return array_map( function($item) {
+        'mailjetContactslists' => function () {
+            return array_map(
+                function ($item) {
                     return new \Kirby\Toolkit\Obj($item);
                 },
                 \Bnomei\Mailjet::singleton()->contactslists()
             );
         },
-        'mailjetSegments' => function() {
-            return array_map( function($item) {
-                return new \Kirby\Toolkit\Obj($item);
-            },
+        'mailjetSegments' => function () {
+            return array_map(
+                function ($item) {
+                    return new \Kirby\Toolkit\Obj($item);
+                },
                 \Bnomei\Mailjet::singleton()->segments()
             );
         },

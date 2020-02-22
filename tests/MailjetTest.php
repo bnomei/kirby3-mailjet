@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Bnomei\Mailjet;
+use Mailjet\Client;
 use PHPUnit\Framework\TestCase;
 
 final class MailjetTest extends TestCase
@@ -24,7 +25,7 @@ final class MailjetTest extends TestCase
 
     public function testMailjetLibExists()
     {
-        $this->assertIsString(\Mailjet\Client::class);
+        $this->assertIsString(Client::class);
     }
 
     public function testConstruct()
@@ -38,7 +39,7 @@ final class MailjetTest extends TestCase
     {
         $mailjet = new Mailjet();
 
-        $this->assertInstanceOf(\Mailjet\Client::class, $mailjet->client());
+        $this->assertInstanceOf(Client::class, $mailjet->client());
     }
 
     public function testSingleton()
@@ -55,8 +56,12 @@ final class MailjetTest extends TestCase
     public function testCallableOptions()
     {
         $mailjet = new Mailjet([
-            'apikey' => function() { return 'APIKEY'; },
-            'apisecret' => function() { return 'APISECRET'; },
+            'apikey' => function () {
+                return 'APIKEY';
+            },
+            'apisecret' => function () {
+                return 'APISECRET';
+            },
         ]);
 
         $this->assertInstanceOf(Mailjet::class, $mailjet);
@@ -70,13 +75,13 @@ final class MailjetTest extends TestCase
         ]);
         $smtpTO = $mailjet->transport();
 
-        $this->assertEquals( 'smtp', $smtpTO['type']);
-        $this->assertEquals( 'in-v3.mailjet.com', $smtpTO['host']);
-        $this->assertEquals( 587, $smtpTO['port']);
-        $this->assertEquals( 'tsl', $smtpTO['security']);
-        $this->assertEquals( true, $smtpTO['auth']);
-        $this->assertEquals( 'APIKEY', $smtpTO['username']);
-        $this->assertEquals( 'APISECRET', $smtpTO['password']);
+        $this->assertEquals('smtp', $smtpTO['type']);
+        $this->assertEquals('in-v3.mailjet.com', $smtpTO['host']);
+        $this->assertEquals(587, $smtpTO['port']);
+        $this->assertEquals('tsl', $smtpTO['security']);
+        $this->assertEquals(true, $smtpTO['auth']);
+        $this->assertEquals('APIKEY', $smtpTO['username']);
+        $this->assertEquals('APISECRET', $smtpTO['password']);
     }
 
     public function testContactslist()

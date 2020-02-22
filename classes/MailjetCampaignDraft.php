@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Bnomei;
 
+use DateTime;
+use Exception;
+use Kirby\Cms\Field;
 use Mailjet\Client;
 use Mailjet\Resources;
+use function mailjet;
 
 /**
  * @method setLocale(string $value): self
@@ -13,7 +17,7 @@ use Mailjet\Resources;
  * @method setSenderemail(string $value): self
  * @method setSubject(string $value): self
  * @method setTitle(string $value): self
- * @method setDatetime(\DateTime $value): self
+ * @method setDatetime(DateTime $value): self
  * @method setTemplate(int $value): self
  * @method setText(string $value): self
  * @method setHtml(string $value): self
@@ -55,7 +59,7 @@ final class MailjetCampaignDraft
     private $html;
     /** @var string */
     private $url;
-    /** @var \DateTime|null */
+    /** @var DateTime|null */
     private $datetime;
     /** @var int|null */
     private $template;
@@ -94,11 +98,11 @@ final class MailjetCampaignDraft
 
     public function __call(string $name, $arguments)
     {
-        if(strlen($name) > 3 && strpos($name, 'get') === 0) {
+        if (strlen($name) > 3 && strpos($name, 'get') === 0) {
             return $this->get($name);
         }
 
-        if(strlen($name) > 3 && strpos($name, 'set') === 0 &&
+        if (strlen($name) > 3 && strpos($name, 'set') === 0 &&
             is_array($arguments) && count($arguments) === 1) {
             return $this->set($name, $arguments[0]);
         }
@@ -106,7 +110,7 @@ final class MailjetCampaignDraft
 
     private function get(string $name)
     {
-        $getters = array_map(static function($item) {
+        $getters = array_map(static function ($item) {
             return 'get' . ucfirst($item);
         }, static::$fluentProperties);
 
@@ -114,21 +118,24 @@ final class MailjetCampaignDraft
         if ($key !== false) {
             return $this->{static::$fluentProperties[$key]};
         } else {
-            throw new \Exception('Invalid getter: ' . $name);
+            throw new Exception('Invalid getter: ' . $name);
         }
     }
 
     private function set(string $name, $value): self
     {
-        $setters = array_map(static function($item) {
+        $setters = array_map(static function ($item) {
             return 'set' . ucfirst($item);
         }, static::$fluentProperties);
 
         $key = array_search($name, $setters);
         if ($key !== false) {
+            if (is_a($value, Field::class)) {
+                $value = $value->value();
+            }
             $this->{static::$fluentProperties[$key]} = $value;
         } else {
-            throw new \Exception('Invalid getter: ' . $name);
+            throw new Exception('Invalid getter: ' . $name);
         }
 
         return $this;
@@ -208,10 +215,10 @@ final class MailjetCampaignDraft
             'TemplateID' => $this->template,
         ];
 
-        $body = array_filter($body, static function($value) {
-           return ! is_null($value) && strlen(trim(strval($value))) > 0;
+        $body = array_filter($body, static function ($value) {
+            return ! is_null($value) && strlen(trim(strval($value))) > 0;
         });
-        $body = array_map(static function($value) {
+        $body = array_map(static function ($value) {
             return strval($value);
         }, $body);
 
@@ -286,6 +293,11 @@ final class MailjetCampaignDraft
         return $response->success() ? $response->getData()[0]['Status'] === 'draft' : false;
     }
 
+    public function publish(): bool
+    {
+        return $this->send();
+    }
+
     public function send(): bool
     {
         $response = $this->client->post(Resources::$CampaigndraftSend, [
@@ -351,7 +363,7 @@ final class MailjetCampaignDraft
 
     public static function scheduled(): array
     {
-        $response = \mailjet()->client()->get(Resources::$Campaigndraft, [
+        $response = mailjet()->client()->get(Resources::$Campaigndraft, [
             'Filters' => [
                 'Status' => '1',
                 //'Status' => '0', // '0' = ALL, else comma seperated list
@@ -365,7 +377,7 @@ final class MailjetCampaignDraft
         ]);
 
         return $response->success() && count($response->getData()) ?
-            array_map(static function($value) {
+            array_map(static function ($value) {
                 return [
                     'Name' => $value['Subject'],
                     'Value' => $value['ID'],

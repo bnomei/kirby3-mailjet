@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Bnomei;
 
+use Kirby\Exception\InvalidArgumentException;
 use Kirby\Toolkit\A;
-use \Mailjet\Client;
+use Mailjet\Client;
 use Mailjet\Resources;
 
 final class Mailjet
 {
-    /** @var \Mailjet\Client */
+    /** @var Client */
     private $client;
 
     /** @var array */
@@ -60,7 +61,6 @@ final class Mailjet
         foreach ($this->options as $key => $callable) {
             if (is_callable($callable) && in_array($key, ['apikey', 'apisecret', 'smstoken'])) {
                 $this->options[$key] = trim($callable()) . '';
-
             }
         }
 
@@ -98,7 +98,7 @@ final class Mailjet
     /**
      * Get Mailjet Client Instance
      *
-     * @return \Mailjet\Client
+     * @return Client
      */
     public function client(): Client
     {
@@ -135,7 +135,7 @@ final class Mailjet
     /**
      * @param string $key
      * @return mixed|null
-     * @throws \Kirby\Exception\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     private function cacheRead(string $key)
     {
@@ -269,12 +269,12 @@ final class Mailjet
         return $value;
     }
 
-    /** @var \Bnomei\Mailjet */
+    /** @var Mailjet */
     private static $singleton;
 
     /**
      * @param array $options
-     * @return \Bnomei\Mailjet
+     * @return Mailjet
      */
     public static function singleton(array $options = [])
     {

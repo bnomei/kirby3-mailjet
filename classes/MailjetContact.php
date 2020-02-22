@@ -58,7 +58,8 @@ final class MailjetContact
         // does exist
         if ($response->success()) {
             $response = $this->client->put(
-                Resources::$Contact, [
+                Resources::$Contact,
+                [
                     'id' => strtolower($email),
                     'body' => ['IsExcludedFromCampaigns' => 'true']
                 ]

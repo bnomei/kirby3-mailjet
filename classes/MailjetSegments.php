@@ -54,7 +54,6 @@ final class MailjetSegments
                     break;
                 }
             }
-
         } else {
             $response = $this->client->get(
                 Resources::$Contactfilter,

@@ -29,13 +29,13 @@ final class MailjetCampaignDraftTest extends TestCase
 
     public function setUp(): void
     {
-        $this->to = \option('campaign.test.to.email');
-        $this->from = \option('campaign.test.from.email');
+        $this->to = option('campaign.test.to.email');
+        $this->from = option('campaign.test.from.email');
 
-        $this->campaign = \mailjet()->campaignDraft();
+        $this->campaign = mailjet()->campaignDraft();
         $this->campaign
             ->setLocale('de_DE') // required
-            ->setSender(\mailjet()->sender($this->from))
+            ->setSender(mailjet()->sender($this->from))
             ->setSenderemail($this->from);
     }
 
@@ -62,7 +62,7 @@ final class MailjetCampaignDraftTest extends TestCase
         $this->needsAPI();
 
         $subject = md5((string) microtime());
-        $list = \mailjet()->contactslist('BNOMEI');
+        $list = mailjet()->contactslist('BNOMEI');
 
         $success = $this->campaign
             ->setSubject($subject)
@@ -85,7 +85,7 @@ final class MailjetCampaignDraftTest extends TestCase
             ->saveDraft(); // load since local and subject match
         $this->assertTrue($success);
 
-        $id = \option('campaign.test.id');
+        $id = option('campaign.test.id');
         $this->assertNotNull($this->campaign->id());
         $this->assertEquals($id, $this->campaign->id());
 
@@ -108,13 +108,13 @@ final class MailjetCampaignDraftTest extends TestCase
         $this->needsAPI();
 
         $subject = md5((string) microtime());
-        $list = \mailjet()->contactslist('TEST');
+        $list = mailjet()->contactslist('TEST');
 
         foreach ([1,2,3] as $num) {
             $success = $this->campaign
                 ->setSubject($subject . ' ' . $num)
                 ->setContactslist($list)
-                ->setDatetime(new \DateTime('+1 day'))
+                ->setDatetime(new DateTime('+1 day'))
                 ->setText('Gogol ' . $num)
                 ->setHtml('<b>G</b>ogol ' . $num)
                 ->saveDraft();
@@ -128,7 +128,7 @@ final class MailjetCampaignDraftTest extends TestCase
         // cached: \mailjet()->scheduledCampaignDrafts()
         // live: MailjetCampaignDraft::scheduled()
         foreach (MailjetCampaignDraft::scheduled() as $draft) {
-            $campaign = \mailjet()->campaignDraft($draft['Value']);
+            $campaign = mailjet()->campaignDraft($draft['Value']);
             $success = $campaign->cancelSchedule();
             $this->assertTrue($success);
         }

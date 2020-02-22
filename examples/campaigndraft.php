@@ -1,18 +1,18 @@
 <?php
 $senderemail = "b@bnomei.com";
-$draft = \mailjet()->campaignDraft();
+$draft = mailjet()->campaignDraft();
 $draft
-    ->setLocale('en_EN')
+    ->setLocale('en_US')
     ->setSender(
-        \mailjet()->sender($senderemail)
+        mailjet()->sender($senderemail)
     )
     ->setSenderemail($senderemail)
     ->setSubject('A fluent newsletter tool')
     ->setContactslist(
-        \mailjet()->contactslist('TEST')
+        mailjet()->contactslist('TEST')
     )
     ->setSegment(
-        \mailjet()->segment('getkirby')
+        mailjet()->segment('getkirby')
     )
     ->setText('Kirby 3 Mailjet Plugin')
     ->setHtml('Kirby 3 <i>Mailjet</i> Plugin')

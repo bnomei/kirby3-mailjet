@@ -30,8 +30,7 @@ final class MailjetContactslists
         MailjetContact $contact,
         MailjetContactProperties $contactProperties,
         MailjetLog $log
-    )
-    {
+    ) {
         $this->client = $client;
         $this->contact = $contact;
         $this->contactProperties = $contactProperties;
@@ -65,7 +64,6 @@ final class MailjetContactslists
         $id = null;
         if (ctype_digit($name)) {
             $id = intval($name);
-
         } else {
             $response = $this->client->get(
                 Resources::$Contactslist,
@@ -92,7 +90,8 @@ final class MailjetContactslists
     public function remove(string $email, int $contactslistID): bool
     {
         $response = $this->client->post(
-            Resources::$ContactslistManagecontact, [
+            Resources::$ContactslistManagecontact,
+            [
                 'id' => $contactslistID,
                 'body' => ['Email' => $email, 'Action' => 'remove']
             ]
@@ -109,7 +108,8 @@ final class MailjetContactslists
     public function unsubscribe(string $email, int $contactslistID): bool
     {
         $response = $this->client->post(
-            Resources::$ContactslistManagecontact, [
+            Resources::$ContactslistManagecontact,
+            [
                 'id' => $contactslistID,
                 'body' => ['Email' => $email, 'Action' => 'unsub']
             ]
@@ -143,7 +143,6 @@ final class MailjetContactslists
         );
 
         if ($response->success()) {
-
             return $this->contactProperties->set($email, $contactData);
         }
 

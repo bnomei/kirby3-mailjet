@@ -7,6 +7,7 @@ namespace Bnomei;
 use Kirby\Toolkit\A;
 use Mailjet\Client;
 use Mailjet\Resources;
+use function mailjet;
 
 final class MailjetContactProperties
 {
@@ -34,7 +35,7 @@ final class MailjetContactProperties
 
         if ($response->success()) {
             $dataKV = [];
-            foreach(A::get($response->getData()[0], 'Data', []) as $item) {
+            foreach (A::get($response->getData()[0], 'Data', []) as $item) {
                 $dataKV[$item['Name']] = $item['Value'];
             }
             return $dataKV;
@@ -77,7 +78,7 @@ final class MailjetContactProperties
 
     public static function create(string $name, string $type = 'str', string $namespace = 'static')
     {
-        $response = \mailjet()->client()->post(Resources::$Contactmetadata, [
+        $response = mailjet()->client()->post(Resources::$Contactmetadata, [
             'body' => [
                 'Datatype' => $type,
                 'Name' => $name,
