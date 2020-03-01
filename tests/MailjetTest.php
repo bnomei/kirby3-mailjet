@@ -206,6 +206,8 @@ final class MailjetTest extends TestCase
 
     public function testContactProperties()
     {
+        $this->needsAPI();
+
         $email = md5(microtime()) . '@bnomei.com';
         $contactlistID = \mailjet()->contactslist('TEST');
 

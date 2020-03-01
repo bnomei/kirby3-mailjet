@@ -35,7 +35,6 @@ final class MailjetCampaignDraftTest extends TestCase
         $this->campaign = mailjet()->campaignDraft();
         $this->campaign
             ->setLocale('de_DE') // required
-            ->setSender(mailjet()->sender($this->from))
             ->setSenderemail($this->from);
     }
 
@@ -46,6 +45,7 @@ final class MailjetCampaignDraftTest extends TestCase
         $subject = md5((string) microtime());
 
         $success = $this->campaign
+            ->setSender(mailjet()->sender($this->from))
             ->setSubject($subject) // required
             ->setText('Smarkatch')
             ->setHtml('<b>S</b><i>mark</i>atc<h1>h</h1>')
@@ -65,6 +65,7 @@ final class MailjetCampaignDraftTest extends TestCase
         $list = mailjet()->contactslist('BNOMEI');
 
         $success = $this->campaign
+            ->setSender(mailjet()->sender($this->from))
             ->setSubject($subject)
             ->setContactslist($list)
             ->setText('Voi-La')
@@ -81,6 +82,7 @@ final class MailjetCampaignDraftTest extends TestCase
         $this->needsAPI();
 
         $success = $this->campaign
+            ->setSender(mailjet()->sender($this->from))
             ->setSubject('Album of the week') // required
             ->saveDraft(); // load since local and subject match
         $this->assertTrue($success);
@@ -112,6 +114,7 @@ final class MailjetCampaignDraftTest extends TestCase
 
         foreach ([1,2,3] as $num) {
             $success = $this->campaign
+                ->setSender(mailjet()->sender($this->from))
                 ->setSubject($subject . ' ' . $num)
                 ->setContactslist($list)
                 ->setDatetime(new DateTime('+1 day'))
