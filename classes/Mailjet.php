@@ -230,7 +230,7 @@ final class Mailjet
             return $cache;
         }
         $value = $this->segments->all();
-        $this->cacheWrite('contactslists', $value);
+        $this->cacheWrite('segments', $value);
         return $value;
     }
 
