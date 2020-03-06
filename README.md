@@ -7,12 +7,11 @@
 [![Maintainability](https://flat.badgen.net/codeclimate/maintainability/bnomei/kirby3-mailjet)](https://codeclimate.com/github/bnomei/kirby3-mailjet) 
 [![Twitter](https://flat.badgen.net/badge/twitter/bnomei?color=66d9ef)](https://twitter.com/bnomei)
 
-Send transactional SMS, transactional E-Mail and Campaigns with Mailjet
+Send transactional SMS, transactional E-Mail and Campaigns with [Mailjet](https://www.mailjet.com/)
 
 ## Wiki
 
 Continue to the [Mailjet Plugin Wiki](https://github.com/bnomei/kirby3-mailjet/wiki) to read more on how to install, setup and use this plugin.
-
 
 ## Dependencies
 
