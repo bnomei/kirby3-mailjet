@@ -7,7 +7,7 @@ $to = 'roger.rabbit@disney.com';
 $to = 'PLACEHOLDER@lists.mailjet.com'; //
 
 $success = kirby()->email([
-    'from' => 'from' => new \Kirby\Cms\User([
+    'from' => new \Kirby\Cms\User([
         'email' => 'mailjet@example.com', // your verified mailjet sender
         'name' => 'Example Name', // your name
     ]);
