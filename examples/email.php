@@ -3,11 +3,14 @@
 // regular "transactional" email
 $to = 'roger.rabbit@disney.com';
 
-// Mailjets "magic" Contactlist-E-Mail will trigger a Newsletter/Campaign
+// or Mailjets "magic" Contactlist-E-Mail will trigger a Newsletter/Campaign
 $to = 'PLACEHOLDER@lists.mailjet.com'; //
 
 $success = kirby()->email([
-    'from' => 'b@bnomei.com', // your verified mailjet sender
+    'from' => 'from' => new \Kirby\Cms\User([
+        'email' => 'mailjet@example.com', // your verified mailjet sender
+        'name' => 'Example Name', // your name
+    ]);
     'to' => $to,
     'subject' => 'Sending E-Mails is fun',
     'body' => [
