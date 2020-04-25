@@ -14,7 +14,7 @@
 /vendor/**/.*
 /vendor/**/*.json
 /vendor/**/*.txt
-/vendor/**/*.md``
+/vendor/**/*.md
 /vendor/**/*.yml
 /vendor/**/*.yaml
 /vendor/**/*.xml
@@ -34,3 +34,4 @@ coverage.xml
 /vendor/**/Dockerfile
 /tests/site/sessions/
 /tests/site/logs/
+/node_modules/

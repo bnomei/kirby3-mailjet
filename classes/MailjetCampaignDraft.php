@@ -381,6 +381,7 @@ final class MailjetCampaignDraft
                 return [
                     'Name' => $value['Subject'],
                     'Value' => $value['ID'],
+                    'Date' => $value['Date'],
                 ];
             }, $response->getData()) : [];
     }

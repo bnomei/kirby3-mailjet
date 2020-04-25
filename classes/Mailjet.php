@@ -60,7 +60,7 @@ final class Mailjet
 
         foreach ($this->options as $key => $callable) {
             if (is_callable($callable) && in_array($key, ['apikey', 'apisecret', 'smstoken'])) {
-                $this->options[$key] = trim($callable()) . '';
+                $this->options[$key] = trim((string) $callable()) . '';
             }
         }
 

@@ -18,6 +18,9 @@ Kirby::plugin('bnomei/mailjet', [
 //                'password' => null, // will default to apisecret
             ]
         ],
+        'sms.from' => '{{ user.name }}',
+        'sms.maxlength' => 140,
+        'sms.cooldown' => 2500,
         'cache' => true,
         'expires' => 1, // minutes
         'log.enabled' => false,
@@ -58,7 +61,55 @@ Kirby::plugin('bnomei/mailjet', [
         'mailjetSegments' => function () {
             return kirby()->collection('mailjetSegments');
         },
-    ]
+    ],
+    'translations' => [
+        'en' => require_once 'src/i18n/en.php',
+        'de' => require_once 'src/i18n/de.php',
+    ],
+    'api' => [
+        'routes' => [
+            [
+                'pattern' => 'mailjet/schedule/list',
+                'action' => function () {
+                    return mailjet()->scheduledCampaignDrafts();
+                },
+            ],
+            [
+                'pattern' => 'mailjet/sms/config',
+                'action' => function () {
+                    return [
+                        'from' => \Kirby\Toolkit\Str::template(
+                            \option('bnomei.mailjet.sms.from'),
+                            [
+                                'kirby' => kirby(),
+                                'site' => kirby()->site(),
+                                'user' => kirby()->user(),
+                            ],
+                        ),
+                        'maxlength' => \option('bnomei.mailjet.sms.maxlength'),
+                        'cooldown' => \option('bnomei.mailjet.sms.cooldown'),
+                    ];
+                },
+            ],
+            [
+                'pattern' => 'mailjet/sms/send',
+                'method' => 'POST',
+                'action' => function () {
+                    $data = kirby()->request()->data();
+                    $from = \Kirby\Toolkit\A::get($data, 'from');
+                    $to = trim(str_replace(' ', '',
+                        \Kirby\Toolkit\A::get($data, 'to' ,'')
+                    ));
+                    $message = \Kirby\Toolkit\A::get($data, 'message');
+                    $success = mailjet()->sendSMS($from, $to, $message);
+
+                    return [
+                        'statusCode' => $success ? 200 : 204,
+                    ];
+                },
+            ],
+        ],
+    ],
   ]);
 
 if (!class_exists('Bnomei\Mailjet')) {

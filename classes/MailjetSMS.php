@@ -47,8 +47,14 @@ final class MailjetSMS
                 'Text' => $text
             ])
         );
-        $response = (new Client())->send($request);
 
-        return $response->getStatusCode() === 200;
+        $response = null;
+        try {
+            $response = (new Client())->send($request);
+        } catch (\Exception $exception) {
+            return false;
+        }
+
+        return $response && $response->getStatusCode() === 200;
     }
 }
