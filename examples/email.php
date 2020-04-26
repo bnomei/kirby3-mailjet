@@ -10,7 +10,7 @@ $success = kirby()->email([
     'from' => new \Kirby\Cms\User([
         'email' => 'mailjet@example.com', // your verified mailjet sender
         'name' => 'Example Name', // your name
-    ]);
+    ]),
     'to' => $to,
     'subject' => 'Sending E-Mails is fun',
     'body' => [
