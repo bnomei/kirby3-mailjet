@@ -84,7 +84,7 @@ Kirby::plugin('bnomei/mailjet', [
                                 'kirby' => kirby(),
                                 'site' => kirby()->site(),
                                 'user' => kirby()->user(),
-                            ],
+                            ]
                         ),
                         'maxlength' => \option('bnomei.mailjet.sms.maxlength'),
                         'cooldown' => \option('bnomei.mailjet.sms.cooldown'),
