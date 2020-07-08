@@ -24,12 +24,12 @@ Kirby::plugin('bnomei/mailjet', [
         'cache' => true,
         'expires' => 1, // minutes
         'log.enabled' => false,
-        'log' => function (string $msg, string $level = 'info', array $context = []): bool {
+        'log.fn' => function (string $msg, string $level = 'info', array $context = []): bool {
             if (option('bnomei.mailjet.log.enabled')) {
                 if (function_exists('monolog')) {
                     monolog()->{$level}($msg, $context);
                 } elseif (function_exists('kirbyLog')) {
-                    kirbyLog('bnomei.janitor.log')->log($msg, $level, $context);
+                    kirbyLog('bnomei.janitor.log.fn')->log($msg, $level, $context);
                 }
                 return true;
             }
