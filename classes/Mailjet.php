@@ -50,7 +50,7 @@ final class Mailjet
     {
         $defaults = [
             'debug' => option('debug'),
-            'log' => option('bnomei.mailjet.log'),
+            'log' => option('bnomei.mailjet.log.fn'),
             'expire' => option('bnomei.mailjet.expire', 1),
             'apikey' => option('bnomei.mailjet.apikey'),
             'apisecret' => option('bnomei.mailjet.apisecret'),

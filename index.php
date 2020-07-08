@@ -29,7 +29,7 @@ Kirby::plugin('bnomei/mailjet', [
                 if (function_exists('monolog')) {
                     monolog()->{$level}($msg, $context);
                 } elseif (function_exists('kirbyLog')) {
-                    kirbyLog('bnomei.janitor.log.fn')->log($msg, $level, $context);
+                    kirbyLog('bnomei.janitor.log')->log($msg, $level, $context);
                 }
                 return true;
             }
