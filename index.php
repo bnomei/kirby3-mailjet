@@ -7,6 +7,7 @@ Kirby::plugin('bnomei/mailjet', [
         'apikey' => null, // or callback
         'apisecret' => null, // or callback
         'smstoken' => null, // or callback
+        'trap' => null, // or callback
         'email' => [
             'transport' => [
                 'type' => 'smtp',

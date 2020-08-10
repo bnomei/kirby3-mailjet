@@ -55,6 +55,7 @@ final class Mailjet
             'apikey' => option('bnomei.mailjet.apikey'),
             'apisecret' => option('bnomei.mailjet.apisecret'),
             'smstoken' => option('bnomei.mailjet.smstoken'),
+            'trap' => option('bnomei.mailjet.trap'),
         ];
         $this->options = array_merge($defaults, $options);
 
@@ -187,6 +188,11 @@ final class Mailjet
         $value = $response->success() ? $response->getData()[0]['ID'] : null;
         $this->cacheWrite('sender-' . $email, $value);
         return $value;
+    }
+
+    public function trap(?string $email = null): ?string
+    {
+        return $email ?? $this->option('trap');
     }
 
     public function contactslists(): array
