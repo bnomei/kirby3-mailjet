@@ -190,6 +190,17 @@ final class Mailjet
         return $value;
     }
 
+    public function sendername(string $email): ?string
+    {
+        if ($cache = $this->cacheRead('sendername-' . $email)) {
+            return $cache;
+        }
+        $response = $this->client->get(Resources::$Sender, ['id' => $email]);
+        $value = $response->success() ? $response->getData()[0]['Name'] : null;
+        $this->cacheWrite('sendername-' . $email, $value);
+        return $value;
+    }
+
     public function trap(?string $email = null): ?string
     {
         return $email ?? $this->option('trap');

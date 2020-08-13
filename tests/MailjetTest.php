@@ -250,4 +250,12 @@ final class MailjetTest extends TestCase
         $this->assertIsArray($list);
         // $this->assertTrue(count($list) > 0);
     }
+
+    public function testSendername()
+    {
+        $this->needsAPI();
+
+        $sender = \mailjet()->sendername('b@bnomei.com');
+        $this->assertEquals('Bnomei', $sender);
+    }
 }
