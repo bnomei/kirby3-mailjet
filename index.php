@@ -97,11 +97,15 @@ Kirby::plugin('bnomei/mailjet', [
                 'method' => 'POST',
                 'action' => function () {
                     $data = kirby()->request()->data();
-                    $from = trim(str_replace(' ', '',
-                        \Kirby\Toolkit\A::get($data, 'from' ,'')
+                    $from = trim(str_replace(
+                        ' ',
+                        '',
+                        \Kirby\Toolkit\A::get($data, 'from', '')
                     ));
-                    $to = trim(str_replace(' ', '',
-                        \Kirby\Toolkit\A::get($data, 'to' ,'')
+                    $to = trim(str_replace(
+                        ' ',
+                        '',
+                        \Kirby\Toolkit\A::get($data, 'to', '')
                     ));
                     $message = \Kirby\Toolkit\A::get($data, 'message');
                     $success = mailjet()->sendSMS($from, $to, $message);
