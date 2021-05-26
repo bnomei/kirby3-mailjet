@@ -23,7 +23,7 @@ final class MailjetSegments
     public function all(): array
     {
         $segments = [];
-        $response = $this->client->get(Resources::$Contactfilter, ['body' => null]);
+        $response = $this->client->get(Resources::$Contactfilter, ['body' => ['limit' => 1000]]);
         if ($response->success()) {
             foreach ($response->getData() as $segment) {
                 $segments[] = [

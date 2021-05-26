@@ -40,7 +40,7 @@ final class MailjetContactslists
     public function all(): array
     {
         $contactslists = [];
-        $response = $this->client->get(Resources::$Contactslist, ['body' => null]);
+        $response = $this->client->get(Resources::$Contactslist, ['body' => ['limit' => 1000]]);
         if ($response->success()) {
             foreach ($response->getData() as $segment) {
                 $contactslists[] = [
