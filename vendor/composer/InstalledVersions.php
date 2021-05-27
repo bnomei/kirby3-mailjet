@@ -27,8 +27,8 @@ class InstalledVersions
 private static $installed = array (
   'root' => 
   array (
-    'pretty_version' => '1.3.4',
-    'version' => '1.3.4.0',
+    'pretty_version' => '1.3.5',
+    'version' => '1.3.5.0',
     'aliases' => 
     array (
     ),
@@ -39,8 +39,8 @@ private static $installed = array (
   array (
     'bnomei/kirby3-mailjet' => 
     array (
-      'pretty_version' => '1.3.4',
-      'version' => '1.3.4.0',
+      'pretty_version' => '1.3.5',
+      'version' => '1.3.5.0',
       'aliases' => 
       array (
       ),
