@@ -69,7 +69,7 @@ final class Mailjet
             $this->options['apikey'],
             $this->options['apisecret'],
             true,
-            ['version' => 'v3']
+            ['version' => 'v3.1']
         );
 
         $this->log = new MailjetLog((bool)$this->option('debug'), $this->option('log'));

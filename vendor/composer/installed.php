@@ -1,8 +1,8 @@
 <?php return array (
   'root' => 
   array (
-    'pretty_version' => '1.3.5',
-    'version' => '1.3.5.0',
+    'pretty_version' => '1.3.6',
+    'version' => '1.3.6.0',
     'aliases' => 
     array (
     ),
@@ -13,8 +13,8 @@
   array (
     'bnomei/kirby3-mailjet' => 
     array (
-      'pretty_version' => '1.3.5',
-      'version' => '1.3.5.0',
+      'pretty_version' => '1.3.6',
+      'version' => '1.3.6.0',
       'aliases' => 
       array (
       ),
