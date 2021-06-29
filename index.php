@@ -4,6 +4,7 @@
 
 Kirby::plugin('bnomei/mailjet', [
     'options' => [
+        'apiversion' => 'v3', // or callback
         'apikey' => null, // or callback
         'apisecret' => null, // or callback
         'smstoken' => null, // or callback

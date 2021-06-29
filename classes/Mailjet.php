@@ -52,6 +52,7 @@ final class Mailjet
             'debug' => option('debug'),
             'log' => option('bnomei.mailjet.log.fn'),
             'expire' => option('bnomei.mailjet.expire', 1),
+            'apiversion' => option('bnomei.mailjet.apiversion', 'v3'), // v3.1
             'apikey' => option('bnomei.mailjet.apikey'),
             'apisecret' => option('bnomei.mailjet.apisecret'),
             'smstoken' => option('bnomei.mailjet.smstoken'),
@@ -60,7 +61,7 @@ final class Mailjet
         $this->options = array_merge($defaults, $options);
 
         foreach ($this->options as $key => $callable) {
-            if (is_callable($callable) && in_array($key, ['apikey', 'apisecret', 'smstoken'])) {
+            if (is_callable($callable) && in_array($key, ['apiversion', 'apikey', 'apisecret', 'smstoken'])) {
                 $this->options[$key] = trim((string) $callable()) . '';
             }
         }
@@ -69,7 +70,7 @@ final class Mailjet
             $this->options['apikey'],
             $this->options['apisecret'],
             true,
-            ['version' => 'v3.1']
+            ['version' => $this->options['apiversion']]
         );
 
         $this->log = new MailjetLog((bool)$this->option('debug'), $this->option('log'));
@@ -104,6 +105,15 @@ final class Mailjet
     public function client(): Client
     {
         return $this->client;
+    }
+
+    /**
+     * Flush plugin cache
+     *
+     */
+    public function flush()
+    {
+        kirby()->cache('bnomei.mailjet')->flush();
     }
 
     /**
