@@ -9,6 +9,20 @@
 
 Send transactional SMS, transactional E-Mail and Campaigns with [Mailjet](https://www.mailjet.com/)
 
+## Commerical Usage
+
+> <br>
+> <b>Support open source!</b><br><br>
+> This plugin is free but if you use it in a commercial project please consider to sponsor me or make a donation.<br>
+> If my work helped you to make some cash it seems fair to me that I might get a little reward as well, right?<br><br>
+> Be kind. Share a little. Thanks.<br><br>
+> &dash; Bruno<br>
+> &nbsp; 
+
+| M | O | N | E | Y |
+|---|----|---|---|---|
+| [Github sponsor](https://github.com/sponsors/bnomei) | [Patreon](https://patreon.com/bnomei) | [Buy Me a Coffee](https://buymeacoff.ee/bnomei) | [Paypal dontation](https://www.paypal.me/bnomei/15) | [Buy a Kirby license using this affiliate link](https://a.paddle.com/v2/click/1129/35731?link=1170) |
+
 ## Wiki
 
 Continue to the [Mailjet Plugin Wiki](https://github.com/bnomei/kirby3-mailjet/wiki) to read more on how to install, setup and use this plugin.
