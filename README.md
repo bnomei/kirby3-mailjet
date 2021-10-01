@@ -9,7 +9,7 @@
 
 Send transactional SMS, transactional E-Mail and Campaigns with [Mailjet](https://www.mailjet.com/)
 
-## Commerical Usage
+## Commercial Usage
 
 > <br>
 > <b>Support open source!</b><br><br>

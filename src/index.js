@@ -1,5 +1,5 @@
 import SmsView from "./components/SmsView.vue";
-import ScheduleView from "./components/ScheduleView";
+import ScheduleView from "./components/ScheduleView.vue";
 
 panel.plugin("schnitzerund/sms", {
   views: {
