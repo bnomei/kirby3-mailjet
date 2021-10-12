@@ -68,6 +68,46 @@ Kirby::plugin('bnomei/mailjet', [
         'en' => require_once 'src/i18n/en.php',
         'de' => require_once 'src/i18n/de.php',
     ],
+    'areas' => [
+        'mailjet-schedule' => function () {
+            return [
+                'label' => 'Mailjet Schedule',
+                'icon' => 'mailjet-schedule',
+                'menu' => true,
+                'link' => 'schedule',
+                'views' => [
+                    'schedule' => [
+                        'pattern' => 'schedule',
+                        'action' => function () {
+                            return [
+                                'component' => 'k-mailjet-schedule-view',
+                                'title' => 'Mailjet Schedule'
+                            ];
+                        }
+                    ]
+                ]
+            ];
+        },
+        'mailjet-sms' => function () {
+            return [
+                'label' => 'Mailjet SMS',
+                'icon' => 'mailjet-sms',
+                'menu' => true,
+                'link' => 'sms',
+                'views' => [
+                    'sms' => [
+                        'pattern' => 'sms',
+                        'action' => function () {
+                            return [
+                                'component' => 'k-mailjet-sms-view',
+                                'title' => 'Mailjet SMS'
+                            ];
+                        }
+                    ]
+                ]
+            ];
+        }
+    ],
     'api' => [
         'routes' => [
             [

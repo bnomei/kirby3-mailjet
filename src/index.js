@@ -2,17 +2,9 @@ import SmsView from "./components/SmsView.vue";
 import ScheduleView from "./components/ScheduleView.vue";
 
 panel.plugin("schnitzerund/sms", {
-  views: {
-    schedule: {
-      component: ScheduleView,
-      icon: "mailjet-schedule",
-      label: "Mailjet Schedule",
-    },
-    sms: {
-      component: SmsView,
-      icon: "mailjet-sms",
-      label: "Mailjet SMS",
-    },
+  components: {
+    "k-mailjet-schedule-view": ScheduleView,
+    "k-mailjet-sms-view": SmsView
   },
   icons: {
     "mailjet-schedule":
