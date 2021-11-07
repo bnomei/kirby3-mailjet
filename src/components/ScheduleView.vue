@@ -1,20 +1,22 @@
 <template>
-  <k-view class="k-mailjet-schedule-view">
-    <k-header>Mailjet Schedule</k-header>
-    <k-cards data-size="small">
-      <k-card
-        v-for="schedule in schedules"
-        :key="schedule.value"
-        :info="schedule.date"
-        :text="schedule.name"
-      />
-    </k-cards>
-  </k-view>
+  <k-inside>
+    <k-view class="k-mailjet-schedule-view">
+      <k-header>Mailjet Schedule</k-header>
+      <k-items layout="cards" data-size="small">
+        <k-item
+          v-for="schedule in schedules"
+          layout="cards"
+          :key="schedule.value"
+          :info="schedule.date"
+          :text="schedule.name"
+        />
+      </k-items>
+    </k-view>
+  </k-inside>
 </template>
 
 <script>
 export default {
-  name: "ScheduleView",
   data() {
     return {
       schedules: [],

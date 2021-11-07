@@ -1,47 +1,49 @@
 <template>
-  <k-view class="k-mailjet-sms-view">
-    <k-header>Mailjet SMS</k-header>
-    <k-fieldset
-      v-model="sms"
-      :fields="{
-        to: {
-          label: this.$t('mailjet.sms.to'),
-          type: 'text',
-          placeholder: this.$t('mailjet.sms.to.placeholder'),
-          width: '1/2',
-          required: true,
-        },
-        from: {
-          label: this.$t('mailjet.sms.from'),
-          type: 'text',
-          placeholder: this.$t('mailjet.sms.from.placeholder'),
-          width: '1/2',
-          // required: true,
-        },
-        message: {
-          label: this.$t('mailjet.sms.message'),
-          maxlength: message.maxlength,
-          required: true,
-          type: 'textarea',
-          buttons: false,
-        },
-      }"
-    />
-    <div class="buttonwrapper">
-      <k-button
-        class="smsbutton"
-        @click="onClick()"
-        :icon="currenticon"
-        :disabled="!cansend"
-        :class="{
-          sending: sending,
-          'has-error': hasError,
-          'is-success': isSuccess,
+  <k-inside>
+    <k-view class="k-mailjet-sms-view">
+      <k-header>Mailjet SMS</k-header>
+      <k-fieldset
+        v-model="sms"
+        :fields="{
+          to: {
+            label: this.$t('mailjet.sms.to'),
+            type: 'text',
+            placeholder: this.$t('mailjet.sms.to.placeholder'),
+            width: '1/2',
+            required: true,
+          },
+          from: {
+            label: this.$t('mailjet.sms.from'),
+            type: 'text',
+            placeholder: this.$t('mailjet.sms.from.placeholder'),
+            width: '1/2',
+            // required: true,
+          },
+          message: {
+            label: this.$t('mailjet.sms.message'),
+            maxlength: message.maxlength,
+            required: true,
+            type: 'textarea',
+            buttons: false,
+          },
         }"
-        >{{ this.$t("mailjet.sms.action") }}</k-button
-      >
-    </div>
-  </k-view>
+      />
+      <div class="buttonwrapper">
+        <k-button
+          class="smsbutton"
+          @click="onClick()"
+          :icon="currenticon"
+          :disabled="!cansend"
+          :class="{
+            sending: sending,
+            'has-error': hasError,
+            'is-success': isSuccess,
+          }"
+          >{{ this.$t("mailjet.sms.action") }}</k-button
+        >
+      </div>
+    </k-view>
+  </k-inside>
 </template>
 
 <script>
