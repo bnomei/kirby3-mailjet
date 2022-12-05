@@ -9,6 +9,7 @@ use Exception;
 use Kirby\Cms\Field;
 use Mailjet\Client;
 use Mailjet\Resources;
+
 use function mailjet;
 
 /**
@@ -247,6 +248,8 @@ final class MailjetCampaignDraft
             'Body' => $this->bodyFull(),
         ]);
         // $this->log->write('createDraft', 'debug', $response->getData());
+
+        var_dump($response->getData());
 
         return $response->success() && count($response->getData()) ?
             $response->getData()[0]['ID'] :

@@ -9,7 +9,6 @@ use Mailjet\Resources;
 
 final class MailjetContact
 {
-
     /**
      * @var Client
      */

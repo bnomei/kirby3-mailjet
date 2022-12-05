@@ -7,6 +7,7 @@ namespace Bnomei;
 use Kirby\Toolkit\A;
 use Mailjet\Client;
 use Mailjet\Resources;
+
 use function mailjet;
 
 final class MailjetContactProperties
