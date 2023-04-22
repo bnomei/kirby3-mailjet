@@ -38,7 +38,7 @@ Kirby::plugin('bnomei/mailjet', [
             return false;
         },
     ],
-    'collections' => [
+    'siteMethods' => [
         'mailjetContactslists' => function () {
             return array_map(
                 function ($item) {
@@ -54,14 +54,6 @@ Kirby::plugin('bnomei/mailjet', [
                 },
                 \Bnomei\Mailjet::singleton()->segments()
             );
-        },
-    ],
-    'siteMethods' => [
-        'mailjetContactslists' => function () {
-            return kirby()->collection('mailjetContactslists');
-        },
-        'mailjetSegments' => function () {
-            return kirby()->collection('mailjetSegments');
         },
     ],
     'translations' => [
