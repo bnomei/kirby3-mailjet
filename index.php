@@ -61,6 +61,7 @@ Kirby::plugin('bnomei/mailjet', [
         'de' => require_once 'src/i18n/de.php',
     ],
     'areas' => [
+        /*
         'mailjet-schedule' => function () {
             return [
                 'label' => 'Mailjet Schedule',
@@ -80,6 +81,7 @@ Kirby::plugin('bnomei/mailjet', [
                 ]
             ];
         },
+        */
         'mailjet-sms' => function () {
             return [
                 'label' => 'Mailjet SMS',
@@ -102,12 +104,14 @@ Kirby::plugin('bnomei/mailjet', [
     ],
     'api' => [
         'routes' => [
+            /*
             [
                 'pattern' => 'mailjet/schedule/list',
                 'action' => function () {
                     return mailjet()->scheduledCampaignDrafts();
                 },
             ],
+            */
             [
                 'pattern' => 'mailjet/sms/config',
                 'action' => function () {
