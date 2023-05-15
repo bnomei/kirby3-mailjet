@@ -45,7 +45,11 @@ final class MailjetContactslists
             foreach ($response->getData() as $segment) {
                 $contactslists[] = [
                     'text' => A::get($segment, 'Name'),
+                    'name' => A::get($segment, 'Name'),
                     'value' => A::get($segment, 'ID'),
+                    'id' => intval(A::get($segment, 'ID')),
+                    'email' => A::get($segment, 'Address') . '@lists.mailjet.com',
+                    'count' => intval(A::get($segment, 'SubscriberCount', 0)),
                 ];
             }
         }
