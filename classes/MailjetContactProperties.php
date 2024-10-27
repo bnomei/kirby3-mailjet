@@ -59,7 +59,7 @@ final class MailjetContactProperties
         ]);
 
         // does exist
-        if ($response->success() && count($data)) {
+        if ($response->success()) {
             $dataToAdd = [];
             foreach ($data as $key => $value) {
                 if (strtolower($key) === 'email') {
