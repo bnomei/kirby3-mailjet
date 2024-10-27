@@ -11,28 +11,30 @@ declare(strict_types=1);
 
 namespace Mailjet;
 
+use Mailjet\Normalizer\NormalizerInterface;
+
 class Client
 {
-    const WRAPPER_VERSION = Config::WRAPPER_VERSION;
+    public const WRAPPER_VERSION = Config::WRAPPER_VERSION;
 
     /**
      * connect_timeout: (float, default=2) Float describing the number of
      * seconds to wait while trying to connect to a server. Use 0 to wait
      * indefinitely (the default behavior).
      */
-    const CONNECT_TIMEOUT = 'connect_timeout';
+    public const CONNECT_TIMEOUT = 'connect_timeout';
 
     /**
      * timeout: (float, default=15) Float describing the timeout of the
      * request in seconds. Use 0 to wait indefinitely (the default behavior).
      */
-    const TIMEOUT = 'timeout';
+    public const TIMEOUT = 'timeout';
 
     /**
      * proxy: (array, default=none) Array describing the proxy options used by guzzle client
      * See guzzle-http for specification.
      */
-    const PROXY = 'proxy';
+    public const PROXY = 'proxy';
 
     private $apikey;
     private $apisecret;
@@ -43,15 +45,24 @@ class Client
     private $call = true;
     private $settings = [];
     private $changed = false;
+    /**
+     * @var int[]
+     */
     private $requestOptions = [
         self::TIMEOUT => 15,
         self::CONNECT_TIMEOUT => 2,
     ];
+    /**
+     * @var string[]
+     */
     private $smsResources = [
         'send',
         'sms',
         'sms-send',
     ];
+    /**
+     * @var string[]
+     */
     private $dataAction = [
         'csverror/text:csv',
         'csvdata/text:plain',
@@ -61,10 +72,10 @@ class Client
     /**
      * Client constructor requires:.
      *
-     * @param string $key Mailjet API Key
-     * @param string|null $secret Mailjet API Secret
-     * @param bool $call performs the call or not
-     * @param array $settings
+     * @param string      $key      Mailjet API Key
+     * @param string|null $secret   Mailjet API Secret
+     * @param bool        $call     performs the call or not
+     * @param array       $settings
      */
     public function __construct(string $key, string $secret = null, bool $call = true, array $settings = [])
     {
@@ -74,9 +85,9 @@ class Client
     /**
      * Trigger a POST request.
      *
-     * @param array $resource Mailjet Resource/Action pair
-     * @param array $args Request arguments
-     * @param array $options
+     * @param  array $resource Mailjet Resource/Action pair
+     * @param  array $args     Request arguments
+     * @param  array $options
      * @return Response
      */
     public function post(array $resource, array $args = [], array $options = []): Response
@@ -97,9 +108,9 @@ class Client
     /**
      * Trigger a GET request.
      *
-     * @param array $resource Mailjet Resource/Action pair
-     * @param array $args Request arguments
-     * @param array $options
+     * @param  array $resource Mailjet Resource/Action pair
+     * @param  array $args     Request arguments
+     * @param  array $options
      * @return Response
      */
     public function get(array $resource, array $args = [], array $options = []): Response
@@ -110,6 +121,16 @@ class Client
 
         $result = $this->_call('GET', $resource[0], $resource[1], $args);
 
+        if (isset($resource['normalizer']) && class_exists($resource['normalizer'])) {
+            /**
+             * @var $normalizer NormalizerInterface
+             */
+            $normalizer = $resource['normalizer'];
+            if ($normalizer::shouldBeNormalized($args)) {
+                $result = $normalizer::normalizeResponse($result);
+            }
+        }
+
         if (!empty($this->changed)) {
             $this->setSettings();
         }
@@ -118,11 +139,11 @@ class Client
     }
 
     /**
-     * Trigger a POST request.
+     * Trigger a PUT request.
      *
-     * @param array $resource Mailjet Resource/Action pair
-     * @param array $args Request arguments
-     * @param array $options
+     * @param  array $resource Mailjet Resource/Action pair
+     * @param  array $args     Request arguments
+     * @param  array $options
      * @return Response
      */
     public function put(array $resource, array $args = [], array $options = []): Response
@@ -141,11 +162,11 @@ class Client
     }
 
     /**
-     * Trigger a GET request.
+     * Trigger a DELETE request.
      *
-     * @param array $resource Mailjet Resource/Action pair
-     * @param array $args Request arguments
-     * @param array $options
+     * @param  array $resource Mailjet Resource/Action pair
+     * @param  array $args     Request arguments
+     * @param  array $options
      * @return Response
      */
     public function delete(array $resource, array $args = [], array $options = []): Response
@@ -166,8 +187,7 @@ class Client
     /**
      * Sets if we need to use https or http protocol while using API Url.
      *
-     * @param bool|mixed $bIsSecured True use https / false use http
-     *
+     * @param  bool|mixed $bIsSecured True use https / false use http
      * @return bool true if we set value false otherwise
      */
     public function setSecureProtocol($bIsSecured = null): bool
@@ -183,6 +203,7 @@ class Client
 
     /**
      * Set HTTP request Timeout.
+     *
      * @param int $timeout
      */
     public function setTimeout(int $timeout): void
@@ -193,6 +214,7 @@ class Client
     /**
      * Set HTTP proxy options
      * See: http://docs.guzzlephp.org/en/stable/request-options.html#proxy.
+     *
      * @param array $proxyArray
      */
     public function setHttpProxy(array $proxyArray): void
@@ -202,6 +224,7 @@ class Client
 
     /**
      * Set HTTP connection Timeout.
+     *
      * @param int $timeout
      */
     public function setConnectionTimeout(int $timeout): void
@@ -231,15 +254,14 @@ class Client
      * Add a HTTP request option.
      *
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      *                     [IMPORTANT]Default options will be overwritten
      *                     if such option is provided
-     *
-     * @see \GuzzleHttp\RequestOptions for a list of available request options.
+     * @see   \GuzzleHttp\RequestOptions for a list of available request options.
      */
     public function addRequestOption(string $key, $value): void
     {
-        if ((null !== $key) && (null !== $value)) {
+        if ($key && (null !== $value)) {
             $this->requestOptions[$key] = $value;
         }
     }
@@ -256,12 +278,12 @@ class Client
     /**
      * Set auth.
      *
-     * @param string $key
+     * @param string      $key
      * @param string|null $secret
-     * @param bool $call
-     * @param array $settings
+     * @param bool        $call
+     * @param array       $settings
      */
-    private function setAuthentication(string $key, ?string $secret, bool $call, array $settings = []): void
+    public function setAuthentication(string $key, ?string $secret, bool $call, array $settings = []): void
     {
         $isBasicAuth = $this->isBasicAuthentication($key, $secret);
 
@@ -277,14 +299,13 @@ class Client
         $this->setSettings();
     }
 
+    // phpcs:disable
     /**
      * Magic method to call a mailjet resource.
-     *
      * @param string $method Http method
      * @param string $resource mailjet resource
      * @param string $action mailjet resource action
      * @param array $args Request arguments
-     *
      * @return Response server response
      */
     private function _call(string $method, string $resource, string $action, array $args): Response
@@ -296,12 +317,12 @@ class Client
             'body' => 'GET' === $method ? null : '{}',
         ], array_change_key_case($args));
 
-        $url = $this->buildURL($resource, $action, (string) $args['id'], $args['actionid']);
+        $url = $this->buildURL($resource, $action, (string)$args['id'], $args['actionid']);
 
         $contentType = 'application/json';
         if ('csvdata/text:plain' === $action) {
             $contentType = 'text/plain';
-        } else if ('csverror/text:csv' === $action) {
+        } elseif ('csverror/text:csv' === $action) {
             $contentType = 'text/csv';
         }
 
@@ -321,6 +342,7 @@ class Client
         return $request->call($this->call);
     }
 
+    // phpcs:enable
     /**
      * Build the base API url depending on wether user need a secure connection
      * or not.
@@ -338,8 +360,8 @@ class Client
      * Checks that both parameters are strings, which means
      * that basic authentication will be required.
      *
-     * @param mixed $key
-     * @param mixed $secret
+     * @param  mixed $key
+     * @param  mixed $secret
      * @return bool flag
      */
     private function isBasicAuthentication($key, $secret): bool
@@ -350,11 +372,10 @@ class Client
     /**
      * Build the final call url without query strings.
      *
-     * @param string $resource Mailjet resource
-     * @param string $action Mailjet resource action
-     * @param string $id mailjet resource id
-     * @param string $actionid mailjet resource actionid
-     *
+     * @param  string $resource Mailjet resource
+     * @param  string $action   Mailjet resource action
+     * @param  string $id       mailjet resource id
+     * @param  string $actionid mailjet resource actionid
      * @return string final call url
      */
     private function buildURL(string $resource, string $action, string $id, string $actionid): string
@@ -371,20 +392,20 @@ class Client
 
         $arrayFilter = [$path, $resource, $id, $action, $actionid];
 
-        return $this->getApiUrl().implode('/', array_filter($arrayFilter));
+        return $this->getApiUrl() . implode('/', array_filter($arrayFilter));
     }
 
     /**
      * Temporary set the variables generating the url.
      *
-     * @param array $options contain temporary modifications for the client
+     * @param array $options  contain temporary modifications for the client
      * @param array $resource may contain the version linked to the resource
      */
     private function setOptions(array $options, array $resource): void
     {
         if (isset($options['version'])) {
             $this->version = $options['version'];
-        } else if (isset($resource[2])) {
+        } elseif (isset($resource[2])) {
             $this->version = $resource[2];
         }
 
@@ -420,7 +441,8 @@ class Client
 
     /**
      * Set a backup if the variables generating the url are change during a call.
-     * @param bool $call
+     *
+     * @param bool  $call
      * @param array $settings
      */
     private function initSettings(bool $call, array $settings = []): void
