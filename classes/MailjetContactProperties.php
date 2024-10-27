@@ -59,6 +59,9 @@ final class MailjetContactProperties
         ]);
 
         // does exist
+        if ($response->success() && count($data) === 0) {
+            return true; // can not update with empty data => 400
+        }
         if ($response->success()) {
             $dataToAdd = [];
             foreach ($data as $key => $value) {
